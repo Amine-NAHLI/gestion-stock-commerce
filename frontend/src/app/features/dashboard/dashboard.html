@@ -1,41 +1,150 @@
 <div class="dashboard-page">
-  <div class="welcome-card">
-    <div class="text-center">
-      <i class="bi bi-check-circle-fill success-icon"></i>
-      <h1 class="mt-3">Bienvenue {{ currentUser?.nomComplet || currentUser?.username }} ! 🎉</h1>
-      <p class="lead text-muted">
-        Vous êtes connecté avec succès au système de gestion de stock.
-      </p>
+  <!-- En-tête -->
+  <div class="dashboard-header">
+    <div>
+      <h2>Bienvenue, {{ currentUser?.nomComplet || currentUser?.username }} 👋</h2>
+      <p class="text-muted">Voici un aperçu de votre activité</p>
+    </div>
+    <button class="btn btn-outline-primary" (click)="loadStats()" [disabled]="isLoading()">
+      <i class="bi bi-arrow-clockwise"></i> Actualiser
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+      <p class="mt-3 text-muted">Chargement des statistiques...</p>
+    </div>
+  }
+
+  <!-- Erreur -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Statistiques -->
+  @if (stats() && !isLoading()) {
+    <!-- Cartes KPI -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-purple">
+          <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats()!.totalProduits }}</div>
+            <div class="stat-label">Produits</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-blue">
+          <div class="stat-icon"><i class="bi bi-truck"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats()!.totalFournisseurs }}</div>
+            <div class="stat-label">Fournisseurs</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-green">
+          <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats()!.totalVentes }}</div>
+            <div class="stat-label">Ventes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="stat-card stat-orange">
+          <div class="stat-icon"><i class="bi bi-people"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats()!.totalUtilisateurs }}</div>
+            <div class="stat-label">Utilisateurs</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    @if (currentUser) {
-      <div class="user-info mt-4">
-        <h5><i class="bi bi-info-circle"></i> Vos informations</h5>
-        <table class="table table-borderless">
-          <tr>
-            <th>👤 Nom d'utilisateur :</th>
-            <td>{{ currentUser.username }}</td>
-          </tr>
-          <tr>
-            <th>📧 Email :</th>
-            <td>{{ currentUser.email }}</td>
-          </tr>
-          <tr>
-            <th>🏷️ Nom complet :</th>
-            <td>{{ currentUser.nomComplet || 'Non renseigné' }}</td>
-          </tr>
-          <tr>
-            <th>🛡️ Rôle :</th>
-            <td><span class="badge bg-success">{{ currentUser.role }}</span></td>
-          </tr>
-        </table>
+    <!-- Cartes financières -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="finance-card">
+          <div class="finance-icon bg-info">
+            <i class="bi bi-cash-stack"></i>
+          </div>
+          <div>
+            <div class="finance-label">Valeur Stock Total</div>
+            <div class="finance-value">{{ formatCurrency(stats()!.valeurStockTotal) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="finance-card">
+          <div class="finance-icon bg-success">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
+          <div>
+            <div class="finance-label">Chiffre d'affaires Ventes</div>
+            <div class="finance-value">{{ formatCurrency(stats()!.caTotalVentes) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-8">
+        <div class="chart-card">
+          <h5><i class="bi bi-graph-up"></i> Évolution des ventes</h5>
+          <div class="chart-container">
+            <canvas baseChart
+              [data]="lineChartData"
+              [options]="lineChartOptions"
+              type="line">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <h5><i class="bi bi-pie-chart"></i> Top Produits</h5>
+          <div class="chart-container">
+            <canvas baseChart
+              [data]="doughnutChartData"
+              [options]="doughnutChartOptions"
+              type="doughnut">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertes stock bas -->
+    @if (stats()!.produitsStockBas > 0) {
+      <div class="alert-card">
+        <div class="alert-header">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <h5>⚠️ Produits en alerte stock bas ({{ stats()!.produitsStockBas }})</h5>
+        </div>
+        <ul class="alert-list">
+          @for (produit of stats()!.produitsAlerteNoms; track produit) {
+            <li>
+              <i class="bi bi-box"></i>
+              {{ produit }}
+            </li>
+          }
+        </ul>
       </div>
     }
-
-    <div class="alert alert-info mt-4">
-      <i class="bi bi-tools"></i>
-      <strong>Modules à venir :</strong> Les modules Produits, Fournisseurs, Ventes, etc.
-      seront ajoutés par Adnane et Kenza. Pour l'instant, profitez du squelette ! 🚀
-    </div>
-  </div>
+  }
 </div>
