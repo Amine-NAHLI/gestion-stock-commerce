@@ -1,0 +1,46 @@
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.welcome-card {
+  background: white;
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  font-size: 5rem;
+  color: #28a745;
+}
+
+.user-info {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+
+  h5 {
+    color: #667eea;
+    margin-bottom: 1rem;
+  }
+
+  table {
+    margin-bottom: 0;
+
+    th {
+      width: 40%;
+      color: #555;
+    }
+  }
+}
+
+.token-display {
+  background: #2d3748;
+  color: #68d391;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}

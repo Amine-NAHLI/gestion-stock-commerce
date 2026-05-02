@@ -1,0 +1,72 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <i class="bi bi-box-seam logo-icon"></i>
+      <h1>Gestion de Stock</h1>
+      <p class="subtitle">Connectez-vous à votre compte</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <!-- Username -->
+      <div class="mb-3">
+        <label for="username" class="form-label">
+          <i class="bi bi-person"></i> Nom d'utilisateur
+        </label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-control form-control-lg"
+          placeholder="admin"
+          [(ngModel)]="credentials.username"
+          required
+          autocomplete="username">
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label">
+          <i class="bi bi-lock"></i> Mot de passe
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control form-control-lg"
+          placeholder="••••••••"
+          [(ngModel)]="credentials.password"
+          required
+          autocomplete="current-password">
+      </div>
+
+      <!-- Message d'erreur -->
+      @if (errorMessage()) {
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <div>{{ errorMessage() }}</div>
+        </div>
+      }
+
+      <!-- Bouton de connexion -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg w-100 mt-3"
+        [disabled]="isLoading()">
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Connexion...
+        } @else {
+          <i class="bi bi-box-arrow-in-right me-2"></i>
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p class="text-center mb-0">
+        Pas encore de compte ?
+        <a routerLink="/register" class="register-link">Créer un compte</a>
+      </p>
+    </div>
+  </div>
+</div>
