@@ -1,0 +1,58 @@
+.coming-soon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+}
+
+.coming-soon-card {
+  background: white;
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+
+  .icon {
+    font-size: 5rem;
+    color: #f39c12;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+  }
+
+  .lead {
+    color: #7f8c8d;
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+  }
+
+  .info-box {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    text-align: left;
+
+    p {
+      margin-bottom: 0.5rem;
+
+      i {
+        color: #667eea;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .badges {
+    .badge {
+      margin: 0.2rem;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.8rem;
+    }
+  }
+}

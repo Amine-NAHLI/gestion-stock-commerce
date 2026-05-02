@@ -1,0 +1,28 @@
+<header class="navbar-custom">
+  <div class="navbar-left">
+    <h4 class="page-title">
+      <i class="bi bi-grid-3x3-gap-fill"></i>
+      Tableau de bord
+    </h4>
+  </div>
+
+  <div class="navbar-right">
+    @if (currentUser) {
+      <div class="user-info">
+        <div class="user-avatar">
+          {{ getUserInitials() }}
+        </div>
+        <div class="user-details">
+          <div class="user-name">{{ currentUser.nomComplet || currentUser.username }}</div>
+          <span class="badge" [ngClass]="getRoleBadgeClass()">
+            {{ currentUser.role }}
+          </span>
+        </div>
+      </div>
+
+      <button class="btn-logout" (click)="logout()" title="Déconnexion">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    }
+  </div>
+</header>

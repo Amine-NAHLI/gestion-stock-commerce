@@ -1,6 +1,6 @@
-.dashboard-container {
-  min-height: 100vh;
-  background-color: #f5f7fa;
+.dashboard-page {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .welcome-card {
@@ -8,8 +8,6 @@
   padding: 3rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .success-icon {
@@ -35,12 +33,4 @@
       color: #555;
     }
   }
-}
-
-.token-display {
-  background: #2d3748;
-  color: #68d391;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
 }
