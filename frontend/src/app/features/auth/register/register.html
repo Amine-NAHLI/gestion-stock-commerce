@@ -1,1 +1,140 @@
-<p>register works!</p>
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <i class="bi bi-person-plus logo-icon"></i>
+      <h1>Créer un compte</h1>
+      <p class="subtitle">Rejoignez le système de gestion de stock</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <!-- Username -->
+      <div class="mb-3">
+        <label for="username" class="form-label">
+          <i class="bi bi-person"></i> Nom d'utilisateur *
+        </label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-control"
+          placeholder="ex: jdupont"
+          [(ngModel)]="data.username"
+          required
+          minlength="3">
+      </div>
+
+      <!-- Nom complet -->
+      <div class="mb-3">
+        <label for="nomComplet" class="form-label">
+          <i class="bi bi-person-vcard"></i> Nom complet
+        </label>
+        <input
+          type="text"
+          id="nomComplet"
+          name="nomComplet"
+          class="form-control"
+          placeholder="ex: Jean Dupont"
+          [(ngModel)]="data.nomComplet">
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label">
+          <i class="bi bi-envelope"></i> Email *
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          placeholder="ex: jean@example.com"
+          [(ngModel)]="data.email"
+          required>
+      </div>
+
+      <!-- Rôle -->
+      <div class="mb-3">
+        <label for="role" class="form-label">
+          <i class="bi bi-shield"></i> Rôle
+        </label>
+        <select
+          id="role"
+          name="role"
+          class="form-select"
+          [(ngModel)]="data.role">
+          <option value="EMPLOYE">Employé</option>
+          <option value="GERANT">Gérant</option>
+          <option value="ADMIN">Administrateur</option>
+        </select>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label">
+          <i class="bi bi-lock"></i> Mot de passe * (min 6 caractères)
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          placeholder="••••••••"
+          [(ngModel)]="data.password"
+          required
+          minlength="6">
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">
+          <i class="bi bi-lock-fill"></i> Confirmer le mot de passe *
+        </label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          class="form-control"
+          placeholder="••••••••"
+          [(ngModel)]="confirmPassword"
+          required>
+      </div>
+
+      <!-- Message de succès -->
+      @if (successMessage()) {
+        <div class="alert alert-success d-flex align-items-center" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <div>{{ successMessage() }}</div>
+        </div>
+      }
+
+      <!-- Message d'erreur -->
+      @if (errorMessage()) {
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <div>{{ errorMessage() }}</div>
+        </div>
+      }
+
+      <!-- Bouton -->
+      <button
+        type="submit"
+        class="btn btn-success btn-lg w-100 mt-3"
+        [disabled]="isLoading()">
+        @if (isLoading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Création en cours...
+        } @else {
+          <i class="bi bi-person-plus-fill me-2"></i>
+          Créer mon compte
+        }
+      </button>
+    </form>
+
+    <div class="register-footer">
+      <p class="text-center mb-0">
+        Déjà un compte ?
+        <a routerLink="/login" class="login-link">Se connecter</a>
+      </p>
+    </div>
+  </div>
+</div>
