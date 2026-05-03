@@ -25,10 +25,27 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then(m => m.Dashboard)
       },
-      // Modules d'Adnane (placeholders)
+      // Modules d'Adnane
       {
         path: 'produits',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/produits/produit-list/produit-list').then(m => m.ProduitListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/produits/produit-form/produit-form').then(m => m.ProduitFormComponent)
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./features/produits/produit-form/produit-form').then(m => m.ProduitFormComponent)
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/produits/produit-detail/produit-detail').then(m => m.ProduitDetailComponent)
+          }
+        ]
       },
       {
         path: 'categories',
