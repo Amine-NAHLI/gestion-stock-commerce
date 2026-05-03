@@ -1,72 +1,69 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <i class="bi bi-box-seam logo-icon"></i>
-      <h1>Gestion de Stock</h1>
-      <p class="subtitle">Connectez-vous à votre compte</p>
-    </div>
-
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <!-- Username -->
-      <div class="mb-3">
-        <label for="username" class="form-label">
-          <i class="bi bi-person"></i> Nom d'utilisateur
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          class="form-control form-control-lg"
-          placeholder="admin"
-          [(ngModel)]="credentials.username"
-          required
-          autocomplete="username">
+<div class="login-wrapper">
+  <div class="login-aside d-none d-lg-flex">
+    <div class="aside-content">
+      <div class="aside-logo mb-4">
+        <i class="bi bi-box-seam"></i>
       </div>
-
-      <!-- Password -->
-      <div class="mb-3">
-        <label for="password" class="form-label">
-          <i class="bi bi-lock"></i> Mot de passe
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          class="form-control form-control-lg"
-          placeholder="••••••••"
-          [(ngModel)]="credentials.password"
-          required
-          autocomplete="current-password">
-      </div>
-
-      <!-- Message d'erreur -->
-      @if (errorMessage()) {
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-          <i class="bi bi-exclamation-triangle-fill me-2"></i>
-          <div>{{ errorMessage() }}</div>
+      <h1 class="display-font text-white mb-3">STOCKLY</h1>
+      <p class="text-white opacity-75 fs-5">La gestion de stock réinventée. Simple, rapide et élégante.</p>
+      
+      <div class="mt-auto">
+        <div class="glass p-4 rounded-4 text-white">
+          <p class="mb-0 small fw-medium italic text-opacity-75">"L'efficacité, c'est de faire les choses bien ; l'efficience, c'est de faire les bonnes choses."</p>
         </div>
-      }
+      </div>
+    </div>
+    <div class="aside-blob"></div>
+  </div>
 
-      <!-- Bouton de connexion -->
-      <button
-        type="submit"
-        class="btn btn-primary btn-lg w-100 mt-3"
-        [disabled]="isLoading()">
-        @if (isLoading()) {
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          Connexion...
-        } @else {
-          <i class="bi bi-box-arrow-in-right me-2"></i>
-          Se connecter
+  <div class="login-main">
+    <div class="login-card-modern">
+      <div class="d-lg-none mb-4 text-center">
+        <i class="bi bi-box-seam text-primary fs-1"></i>
+        <h2 class="display-font mt-2">STOCKLY</h2>
+      </div>
+
+      <h2 class="display-font text-dark mb-2">Bon retour !</h2>
+      <p class="text-secondary mb-5">Connectez-vous pour accéder à votre inventaire.</p>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <div class="mb-4">
+          <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Utilisateur</label>
+          <div class="input-group-premium">
+            <i class="bi bi-person"></i>
+            <input type="text" name="username" class="form-control" placeholder="Entrez votre nom" [(ngModel)]="credentials.username" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Mot de passe</label>
+          <div class="input-group-premium">
+            <i class="bi bi-lock"></i>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" [(ngModel)]="credentials.password" required>
+          </div>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert bg-danger bg-opacity-10 border-0 text-danger small rounded-3 p-3 mb-4 d-flex align-items-center">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            {{ errorMessage() }}
+          </div>
         }
-      </button>
-    </form>
 
-    <div class="login-footer">
-      <p class="text-center mb-0">
-        Pas encore de compte ?
-        <a routerLink="/register" class="register-link">Créer un compte</a>
-      </p>
+        <button type="submit" class="btn btn-primary w-100 py-3 mb-4" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Authentification...
+          } @else {
+            <span class="me-2">Se connecter</span>
+            <i class="bi bi-arrow-right"></i>
+          }
+        </button>
+
+        <p class="text-center text-secondary small mb-0">
+          Nouveau sur Stockly ? <a routerLink="/register" class="text-primary fw-bold text-decoration-none hover-underline">Créer un compte</a>
+        </p>
+      </form>
     </div>
   </div>
 </div>

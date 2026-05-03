@@ -1,10 +1,13 @@
 <aside class="sidebar">
   <div class="sidebar-header">
-    <i class="bi bi-box-seam logo"></i>
-    <h5>Gestion Stock</h5>
+    <div class="logo-box">
+      <i class="bi bi-box-seam"></i>
+    </div>
+    <h5>STOCKLY</h5>
   </div>
 
   <nav class="sidebar-nav">
+    <span class="nav-label">Menu Principal</span>
     @for (item of visibleMenuItems; track item.route) {
       <a [routerLink]="item.route"
          routerLinkActive="active"
@@ -16,6 +19,6 @@
   </nav>
 
   <div class="sidebar-footer">
-    <small class="text-muted">v1.0.0 - 2026</small>
+    <span class="version-tag">Version 1.2.0</span>
   </div>
 </aside>

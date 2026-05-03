@@ -1,83 +1,99 @@
 .sidebar {
-  width: 250px;
-  background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
-  color: #fff;
+  width: 280px;
+  background: var(--sidebar-bg);
   height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.02);
   z-index: 100;
+  border-right: 1px solid #f1f5f9;
 }
 
 .sidebar-header {
-  padding: 1.5rem;
+  padding: 2.5rem 1.75rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 1rem;
 
-  .logo {
-    font-size: 2rem;
-    color: #667eea;
+  .logo-box {
+    width: 42px;
+    height: 42px;
+    background: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.4);
   }
 
   h5 {
     margin: 0;
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 1rem 0;
+  padding: 0.5rem 1.25rem;
   overflow-y: auto;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1.5rem;
-  color: #b8c5d6;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  color: #64748b;
   text-decoration: none;
-  transition: all 0.3s;
-  border-left: 3px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
 
   i {
-    font-size: 1.1rem;
-    width: 20px;
+    font-size: 1.25rem;
+    transition: all 0.2s;
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    border-left-color: #667eea;
+    background: #f8fafc;
+    color: var(--primary);
+    
+    i {
+      transform: translateX(2px);
+    }
   }
 
   &.active {
-    background: rgba(102, 126, 234, 0.15);
-    color: #fff;
-    border-left-color: #667eea;
+    background: #eef2ff;
+    color: var(--primary);
     font-weight: 600;
+
+    i {
+      color: var(--primary);
+    }
   }
 }
 
 .sidebar-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
-}
-
-/* Scrollbar custom */
-.sidebar-nav::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  padding: 2rem 1.75rem;
+  border-top: 1px solid #f1f5f9;
+  
+  .version-tag {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    background: #f8fafc;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
 }
