@@ -1,6 +1,7 @@
 package com.gestionstock.backend.dto.produit;
 
 import com.gestionstock.backend.entity.produit.Categorie;
+import com.gestionstock.backend.entity.produit.MouvementStock;
 import com.gestionstock.backend.entity.produit.Produit;
 import org.springframework.stereotype.Component;
 
@@ -73,5 +74,30 @@ public class ProduitMapper {
         categorie.setNom(dto.getNom());
         categorie.setDescription(dto.getDescription());
         return categorie;
+    }
+
+    public MouvementStockDTO toMouvementDto(MouvementStock mvt) {
+        if (mvt == null) return null;
+        return MouvementStockDTO.builder()
+                .id(mvt.getId())
+                .produitId(mvt.getProduit().getId())
+                .produitNom(mvt.getProduit().getNom())
+                .produitCode(mvt.getProduit().getCode())
+                .quantite(mvt.getQuantite())
+                .type(mvt.getType())
+                .motif(mvt.getMotif())
+                .dateMouvement(mvt.getDateMouvement())
+                .build();
+    }
+
+    public MouvementStock toMouvementEntity(MouvementStockDTO dto) {
+        if (dto == null) return null;
+        MouvementStock mvt = new MouvementStock();
+        mvt.setId(dto.getId());
+        mvt.setQuantite(dto.getQuantite());
+        mvt.setType(dto.getType());
+        mvt.setMotif(dto.getMotif());
+        // Note: Le produit doit être géré dans le service
+        return mvt;
     }
 }

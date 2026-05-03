@@ -66,7 +66,16 @@ export const routes: Routes = [
       },
       {
         path: 'mouvements',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/mouvements/mouvement-list/mouvement-list').then(m => m.MouvementListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/mouvements/mouvement-form/mouvement-form').then(m => m.MouvementFormComponent)
+          }
+        ]
       },
       // Modules de Kenza (placeholders)
       {
