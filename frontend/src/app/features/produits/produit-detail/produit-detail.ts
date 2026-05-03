@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProduitService } from '../../../core/services/produit.service';
@@ -95,13 +95,17 @@ import { Produit } from '../../../core/models/produit.model';
 export class ProduitDetailComponent implements OnInit {
   private produitService = inject(ProduitService);
   private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
   
   produit?: Produit;
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
     if (id) {
-      this.produitService.getProduitById(id).subscribe(p => this.produit = p);
+      this.produitService.getProduitById(id).subscribe(p => {
+        this.produit = p;
+        this.cdr.markForCheck();
+      });
     }
   }
 }

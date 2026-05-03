@@ -49,7 +49,20 @@ export const routes: Routes = [
       },
       {
         path: 'categories',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/categories/categorie-list/categorie-list').then(m => m.CategorieListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/categories/categorie-form/categorie-form').then(m => m.CategorieFormComponent)
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./features/categories/categorie-form/categorie-form').then(m => m.CategorieFormComponent)
+          }
+        ]
       },
       {
         path: 'mouvements',

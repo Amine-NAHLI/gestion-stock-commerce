@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -103,6 +103,7 @@ export class ProduitFormComponent implements OnInit {
   private produitService = inject(ProduitService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   produit: Produit = {
     nom: '',
@@ -122,14 +123,20 @@ export class ProduitFormComponent implements OnInit {
     if (id) {
       this.isEdit = true;
       this.produitService.getProduitById(id).subscribe({
-        next: (p) => this.produit = p,
+        next: (p) => {
+          this.produit = p;
+          this.cdr.markForCheck();
+        },
         error: (err) => console.error('Erreur chargement produit', err)
       });
     }
   }
 
   loadCategories(): void {
-    this.produitService.getAllCategories().subscribe(data => this.categories = data);
+    this.produitService.getAllCategories().subscribe(data => {
+      this.categories = data;
+      this.cdr.markForCheck();
+    });
   }
 
   saveProduit(): void {

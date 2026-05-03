@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProduitService } from '../../../core/services/produit.service';
@@ -98,6 +98,7 @@ import { Produit } from '../../../core/models/produit.model';
 })
 export class ProduitListComponent implements OnInit {
   private produitService = inject(ProduitService);
+  private cdr = inject(ChangeDetectorRef);
   produits: Produit[] = [];
 
   ngOnInit(): void {
@@ -106,7 +107,10 @@ export class ProduitListComponent implements OnInit {
 
   loadProduits(): void {
     this.produitService.getAllProduits().subscribe({
-      next: (data) => this.produits = data,
+      next: (data) => {
+        this.produits = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Erreur lors du chargement des produits', err)
     });
   }
