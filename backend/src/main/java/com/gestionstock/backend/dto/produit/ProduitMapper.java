@@ -87,6 +87,8 @@ public class ProduitMapper {
                 .type(mvt.getType())
                 .motif(mvt.getMotif())
                 .dateMouvement(mvt.getDateMouvement())
+                .userId(mvt.getUser() != null ? mvt.getUser().getId() : null)
+                .userNom(mvt.getUser() != null ? mvt.getUser().getNomComplet() : null)
                 .build();
     }
 
@@ -97,7 +99,7 @@ public class ProduitMapper {
         mvt.setQuantite(dto.getQuantite());
         mvt.setType(dto.getType());
         mvt.setMotif(dto.getMotif());
-        // Note: Le produit doit être géré dans le service
+        // Note: Le produit et l'utilisateur doivent être gérés dans le service
         return mvt;
     }
 }

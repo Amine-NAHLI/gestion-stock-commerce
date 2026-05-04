@@ -18,8 +18,8 @@ public class ProduitDTO {
     private String description;
     private Double prixAchat;
     private Double prixVente;
-    private Integer quantiteStock;
-    private Integer seuilAlerte;
+    private Double quantiteStock;
+    private Double seuilAlerte;
     private String unite;
     private String image;
     private LocalDateTime dateCreation;

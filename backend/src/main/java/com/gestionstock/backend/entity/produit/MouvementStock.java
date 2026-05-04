@@ -1,5 +1,7 @@
 package com.gestionstock.backend.entity.produit;
 
+import com.gestionstock.backend.entity.auth.User;
+import com.gestionstock.backend.entity.enums.TypeMouvement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +23,10 @@ public class MouvementStock {
     @ManyToOne(optional = false)
     @JoinColumn(name = "produit_id", nullable = false)
     private Produit produit;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private Double quantite;

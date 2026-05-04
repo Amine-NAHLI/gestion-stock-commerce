@@ -36,10 +36,10 @@ public class Produit {
     private Double prixVente;
 
     @Column(name = "quantite_stock", nullable = false)
-    private Integer quantiteStock = 0;
+    private Double quantiteStock = 0.0;
 
     @Column(name = "seuil_alerte")
-    private Integer seuilAlerte = 10;
+    private Double seuilAlerte = 10.0;
 
     @Column(length = 20)
     private String unite; // kg, litre, piece, etc.
@@ -67,8 +67,8 @@ public class Produit {
     protected void onCreate() {
         this.dateCreation = LocalDateTime.now();
         this.dateModification = LocalDateTime.now();
-        if (this.quantiteStock == null) this.quantiteStock = 0;
-        if (this.seuilAlerte == null) this.seuilAlerte = 10;
+        if (this.quantiteStock == null) this.quantiteStock = 0.0;
+        if (this.seuilAlerte == null) this.seuilAlerte = 10.0;
     }
 
     @PreUpdate
