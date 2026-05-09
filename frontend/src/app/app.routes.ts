@@ -77,26 +77,78 @@ export const routes: Routes = [
           }
         ]
       },
-      // Modules de Kenza (placeholders)
+      // Modules de Kenza (Phase 3)
       {
         path: 'fournisseurs',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/fournisseurs/fournisseur-list/fournisseur-list').then(m => m.FournisseurListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/fournisseurs/fournisseur-form/fournisseur-form').then(m => m.FournisseurFormComponent)
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./features/fournisseurs/fournisseur-form/fournisseur-form').then(m => m.FournisseurFormComponent)
+          }
+        ]
       },
       {
         path: 'commandes',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/commandes/commande-list/commande-list').then(m => m.CommandeListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/commandes/commande-form/commande-form').then(m => m.CommandeFormComponent)
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/commandes/commande-detail/commande-detail').then(m => m.CommandeDetailComponent)
+          }
+        ]
       },
       {
         path: 'clients',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/clients/client-list/client-list').then(m => m.ClientListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/clients/client-form/client-form').then(m => m.ClientFormComponent)
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () => import('./features/clients/client-form/client-form').then(m => m.ClientFormComponent)
+          }
+        ]
       },
       {
         path: 'ventes',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/ventes/vente-list/vente-list').then(m => m.VenteListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/ventes/vente-form/vente-form').then(m => m.VenteFormComponent)
+          },
+          {
+            path: 'recu/:id',
+            loadComponent: () => import('./features/ventes/vente-recu/vente-recu').then(m => m.VenteRecuComponent)
+          }
+        ]
       },
       {
         path: 'rapports',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        loadComponent: () => import('./features/rapports/export-rapport/export-rapport').then(m => m.ExportRapportComponent)
       },
       {
         path: 'utilisateurs',

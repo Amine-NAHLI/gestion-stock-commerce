@@ -24,8 +24,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.gestionstock.backend.security.JwtAuthenticationFilter;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * Configuration de Spring Security
  * Définit la sécurité de l'application :
@@ -34,13 +32,9 @@ import lombok.RequiredArgsConstructor;
  * - CORS pour le frontend Angular
  * - Encodage BCrypt pour les mots de passe
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsService userDetailsService;
 
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
@@ -49,7 +43,9 @@ public class SecurityConfig {
      * Configure les règles de sécurité HTTP
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter,
+                                                   AuthenticationProvider authenticationProvider) throws Exception {
         http
             // Désactive CSRF (pas nécessaire car on utilise JWT, pas de session)
             .csrf(csrf -> csrf.disable())
@@ -73,7 +69,7 @@ public class SecurityConfig {
             )
 
             // Utiliser notre AuthenticationProvider personnalisé
-            .authenticationProvider(authenticationProvider())
+            .authenticationProvider(authenticationProvider)
 
             // Ajouter notre filtre JWT AVANT le filtre standard de Spring
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -112,9 +108,8 @@ public class SecurityConfig {
      * Provider d'authentification : combine UserDetailsService + PasswordEncoder
      */
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

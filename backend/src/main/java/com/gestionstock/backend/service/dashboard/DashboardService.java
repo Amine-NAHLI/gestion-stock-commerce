@@ -1,75 +1,127 @@
 package com.gestionstock.backend.service.dashboard;
 
+import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.gestionstock.backend.dto.dashboard.DashboardStatsDTO;
+import com.gestionstock.backend.entity.fournisseur.LigneVente;
+import com.gestionstock.backend.entity.fournisseur.Vente;
+import com.gestionstock.backend.entity.produit.Produit;
 import com.gestionstock.backend.repository.auth.UserRepository;
+import com.gestionstock.backend.repository.fournisseur.*;
+import com.gestionstock.backend.repository.produit.CategorieRepository;
+import com.gestionstock.backend.repository.produit.ProduitRepository;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * Service de génération des statistiques du dashboard
- * 
- * NOTE : Ce service utilise pour l'instant uniquement UserRepository
- * car les autres repositories (Produit, Fournisseur, etc.) seront créés
- * par Adnane et Kenza dans leurs parties respectives.
- * 
- * Une fois leurs repositories créés, ce service pourra être enrichi
- * avec les vraies stats.
+ * Service de génération des statistiques du dashboard.
+ * Récupère les données réelles depuis tous les repositories de l'application.
  */
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
 
     private final UserRepository userRepository;
+    private final ProduitRepository produitRepository;
+    private final CategorieRepository categorieRepository;
+    private final FournisseurRepository fournisseurRepository;
+    private final ClientRepository clientRepository;
+    private final CommandeRepository commandeRepository;
+    private final VenteRepository venteRepository;
 
     /**
-     * Récupère les statistiques globales du dashboard
+     * Récupère les statistiques globales du dashboard.
      */
     public DashboardStatsDTO getStats() {
-        // Pour l'instant on retourne des données partiellement vraies
-        // (les compteurs vrais pour User, et des données mock pour le reste)
-        // Adnane et Kenza enrichiront ce service quand leurs entités seront utilisées
-        
+        // 1. Compteurs globaux
         Long totalUtilisateurs = userRepository.count();
+        Long totalProduits = produitRepository.count();
+        Long totalCategories = categorieRepository.count();
+        Long totalFournisseurs = fournisseurRepository.count();
+        Long totalClients = clientRepository.count();
+        Long totalCommandes = commandeRepository.count();
+        Long totalVentes = venteRepository.count();
 
-        // Données mock pour démontrer le dashboard frontend
-        Map<String, Long> ventesParMois = new HashMap<>();
-        ventesParMois.put("Janvier", 45L);
-        ventesParMois.put("Février", 62L);
-        ventesParMois.put("Mars", 78L);
-        ventesParMois.put("Avril", 91L);
-        ventesParMois.put("Mai", 84L);
+        // 2. Alertes Stock
+        List<Produit> tousProduits = produitRepository.findAll();
+        List<Produit> produitsEnAlerte = tousProduits.stream()
+                .filter(p -> p.getQuantiteStock() <= (p.getSeuilAlerte() != null ? p.getSeuilAlerte() : 0))
+                .collect(Collectors.toList());
 
+        List<String> produitsAlerteNoms = produitsEnAlerte.stream()
+                .limit(5) // On n'affiche que les 5 premiers pour ne pas surcharger
+                .map(p -> p.getNom() + " (" + p.getQuantiteStock() + " " + (p.getUnite() != null ? p.getUnite() : "u") + ")")
+                .collect(Collectors.toList());
+
+        // 3. Stats financières
+        Double valeurStockTotal = tousProduits.stream()
+                .mapToDouble(p -> p.getQuantiteStock() * (p.getPrixAchat() != null ? p.getPrixAchat() : 0))
+                .sum();
+
+        List<Vente> toutesVentes = venteRepository.findAll();
+        Double caTotalVentes = toutesVentes.stream()
+                .mapToDouble(v -> v.getMontantTotal() != null ? v.getMontantTotal() : 0)
+                .sum();
+
+        // 4. Stats par mois (pour graphique)
+        Map<String, Long> ventesParMois = new LinkedHashMap<>();
+        // On initialise les 6 derniers mois
+        LocalDateTime now = LocalDateTime.now();
+        for (int i = 5; i >= 0; i--) {
+            LocalDateTime monthDate = now.minusMonths(i);
+            String monthName = monthDate.getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH);
+            monthName = monthName.substring(0, 1).toUpperCase() + monthName.substring(1);
+
+            final int targetMonth = monthDate.getMonthValue();
+            final int targetYear = monthDate.getYear();
+
+            long count = toutesVentes.stream()
+                    .filter(v -> v.getDateVente().getMonthValue() == targetMonth && v.getDateVente().getYear() == targetYear)
+                    .count();
+
+            ventesParMois.put(monthName, count);
+        }
+
+        // 5. Top produits (pour graphique)
         Map<String, Long> topProduits = new HashMap<>();
-        topProduits.put("Coca-Cola", 145L);
-        topProduits.put("Pain", 132L);
-        topProduits.put("Lait", 98L);
-        topProduits.put("Riz", 87L);
-        topProduits.put("Huile", 76L);
+        Map<String, Long> productSales = toutesVentes.stream()
+                .flatMap(v -> v.getLignes().stream())
+                .collect(Collectors.groupingBy(
+                        lv -> lv.getProduit().getNom(),
+                        Collectors.summingLong(LigneVente::getQuantite)
+                ));
 
-        List<String> produitsAlerteNoms = List.of(
-                "Sucre (5 unités)",
-                "Café (3 unités)",
-                "Thé (2 unités)"
-        );
+        topProduits = productSales.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
 
         return DashboardStatsDTO.builder()
-                .totalProduits(0L)            // À remplir par Adnane
-                .totalCategories(0L)          // À remplir par Adnane
-                .totalFournisseurs(0L)        // À remplir par Kenza
-                .totalClients(0L)             // À remplir par Kenza
-                .totalCommandes(0L)           // À remplir par Kenza
-                .totalVentes(0L)              // À remplir par Kenza
+                .totalProduits(totalProduits)
+                .totalCategories(totalCategories)
+                .totalFournisseurs(totalFournisseurs)
+                .totalClients(totalClients)
+                .totalCommandes(totalCommandes)
+                .totalVentes(totalVentes)
                 .totalUtilisateurs(totalUtilisateurs)
-                .produitsStockBas(3L)         // Données mock pour l'instant
+                .produitsStockBas((long) produitsEnAlerte.size())
                 .produitsAlerteNoms(produitsAlerteNoms)
-                .valeurStockTotal(45680.50)   // Mock
-                .caTotalVentes(123450.75)     // Mock
+                .valeurStockTotal(valeurStockTotal)
+                .caTotalVentes(caTotalVentes)
                 .ventesParMois(ventesParMois)
                 .topProduits(topProduits)
                 .build();

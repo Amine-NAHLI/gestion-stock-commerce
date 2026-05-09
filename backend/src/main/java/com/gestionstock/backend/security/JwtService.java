@@ -1,5 +1,6 @@
 package com.gestionstock.backend.security;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 /**
@@ -110,9 +110,11 @@ public class JwtService {
 
     /**
      * Récupère la clé secrète sous forme de SecretKey
+     * Utilise une clé plain text simple sans décodage Base64.
      */
     private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+    System.out.println("=== JWT SECRET VALUE: [" + secretKey + "] LENGTH: " + secretKey.length() + " ===");
+    byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+    return Keys.hmacShaKeyFor(keyBytes);
+}
 }
