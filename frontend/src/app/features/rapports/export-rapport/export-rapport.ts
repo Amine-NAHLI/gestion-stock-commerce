@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExportService } from '../../../core/services/export.service';
 
@@ -48,6 +48,7 @@ import { ExportService } from '../../../core/services/export.service';
   `]
 })
 export class ExportRapportComponent {
+  private cdr = inject(ChangeDetectorRef);
   private exportService = inject(ExportService);
   loading: string | null = null;
 

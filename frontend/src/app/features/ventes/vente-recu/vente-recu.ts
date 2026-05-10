@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { VenteService } from '../../../core/services/vente.service';
@@ -108,13 +108,13 @@ import { Vente } from '../../../core/models/vente.model';
   `,
   styles: [`
     @media print {
-      :host { position: fixed; top: 0; left: 0; right: 0; background: white; z-index: 9999; }
       .btn, a.btn { display: none !important; }
       .card-premium { box-shadow: none !important; }
     }
   `]
 })
 export class VenteRecuComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private venteService = inject(VenteService);
   private route = inject(ActivatedRoute);
   vente: Vente | null = null;
@@ -122,7 +122,7 @@ export class VenteRecuComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
     this.venteService.getVenteById(+id).subscribe({
-      next: (data) => this.vente = data,
+      next: (data) => { this.vente = data; this.cdr.markForCheck(); },
       error: (err) => console.error('Erreur chargement vente', err)
     });
   }

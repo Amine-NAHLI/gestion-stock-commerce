@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CommandeService } from '../../../core/services/commande.service';
@@ -107,6 +107,7 @@ import { Commande, StatutCommande } from '../../../core/models/commande.model';
   `]
 })
 export class CommandeListComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private commandeService = inject(CommandeService);
   commandes: Commande[] = [];
 
@@ -116,7 +117,7 @@ export class CommandeListComponent implements OnInit {
 
   loadCommandes(): void {
     this.commandeService.getAllCommandes().subscribe({
-      next: (data) => this.commandes = data,
+      next: (data) => { this.commandes = data; this.cdr.markForCheck(); },
       error: (err) => console.error('Erreur chargement commandes', err)
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -69,6 +69,7 @@ import { Fournisseur } from '../../../core/models/fournisseur.model';
   `
 })
 export class FournisseurFormComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private fournisseurService = inject(FournisseurService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -81,7 +82,7 @@ export class FournisseurFormComponent implements OnInit {
     if (id) {
       this.isEditMode = true;
       this.fournisseurService.getFournisseurById(+id).subscribe({
-        next: (data) => this.fournisseur = data,
+        next: (data) => { this.fournisseur = data; this.cdr.markForCheck(); },
         error: (err) => console.error('Erreur chargement fournisseur', err)
       });
     }

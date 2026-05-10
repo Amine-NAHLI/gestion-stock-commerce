@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal , ChangeDetectorRef} from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js';
 import { DashboardService } from '../../core/services/dashboard';
@@ -17,6 +17,7 @@ Chart.register(...registerables);
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
 
   private dashboardService = inject(DashboardService);
   private tokenService = inject(TokenService);
@@ -113,6 +114,8 @@ export class Dashboard implements OnInit {
         this.stats.set(data);
         this.updateCharts(data);
         this.isLoading.set(false);
+      
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('❌ Erreur chargement stats :', err);

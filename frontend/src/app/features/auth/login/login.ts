@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal , ChangeDetectorRef} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
@@ -12,6 +12,7 @@ import { LoginRequest } from '../../../core/models/auth.model';
   styleUrl: './login.scss'
 })
 export class Login {
+  private cdr = inject(ChangeDetectorRef);
 
   private authService = inject(AuthService);
   private router = inject(Router);

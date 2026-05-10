@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommandeService } from '../../../core/services/commande.service';
@@ -127,6 +127,7 @@ import { Commande, StatutCommande } from '../../../core/models/commande.model';
   `]
 })
 export class CommandeDetailComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private commandeService = inject(CommandeService);
   private route = inject(ActivatedRoute);
   commande: Commande | null = null;
@@ -138,14 +139,14 @@ export class CommandeDetailComponent implements OnInit {
 
   loadCommande(id: number): void {
     this.commandeService.getCommandeById(id).subscribe({
-      next: (data) => this.commande = data,
+      next: (data) => { this.commande = data; this.cdr.markForCheck(); },
       error: (err) => console.error('Erreur chargement commande', err)
     });
   }
 
   updateStatut(statut: string): void {
     this.commandeService.updateStatut(this.commande!.id!, statut as StatutCommande).subscribe({
-      next: (data) => this.commande = data,
+      next: (data) => { this.commande = data; this.cdr.markForCheck(); },
       error: (err) => console.error('Erreur mise à jour statut', err)
     });
   }

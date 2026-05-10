@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
@@ -96,6 +96,7 @@ import { Client } from '../../../core/models/client.model';
 })
 export class ClientListComponent implements OnInit {
   private clientService = inject(ClientService);
+  private cdr = inject(ChangeDetectorRef);
   clients: Client[] = [];
 
   ngOnInit(): void {
@@ -104,7 +105,10 @@ export class ClientListComponent implements OnInit {
 
   loadClients(): void {
     this.clientService.getAllClients().subscribe({
-      next: (data) => this.clients = data,
+      next: (data) => {
+        this.clients = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Erreur chargement clients', err)
     });
   }

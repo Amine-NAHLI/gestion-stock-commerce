@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { VenteService } from '../../../core/services/vente.service';
@@ -104,6 +104,7 @@ import { Vente } from '../../../core/models/vente.model';
   `]
 })
 export class VenteListComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private venteService = inject(VenteService);
   ventes: Vente[] = [];
 
@@ -113,7 +114,7 @@ export class VenteListComponent implements OnInit {
 
   loadVentes(): void {
     this.venteService.getAllVentes().subscribe({
-      next: (data) => this.ventes = data,
+      next: (data) => { this.ventes = data; this.cdr.markForCheck(); },
       error: (err) => console.error('Erreur chargement ventes', err)
     });
   }

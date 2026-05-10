@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -64,6 +64,7 @@ import { Client } from '../../../core/models/client.model';
   `
 })
 export class ClientFormComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private clientService = inject(ClientService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -76,7 +77,7 @@ export class ClientFormComponent implements OnInit {
     if (id) {
       this.isEditMode = true;
       this.clientService.getClientById(+id).subscribe({
-        next: (data) => this.client = data,
+        next: (data) => { this.client = data; this.cdr.markForCheck(); },
         error: (err) => console.error('Erreur chargement client', err)
       });
     }

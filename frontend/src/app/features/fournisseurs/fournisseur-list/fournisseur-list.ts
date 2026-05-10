@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FournisseurService } from '../../../core/services/fournisseur.service';
@@ -96,6 +96,7 @@ import { Fournisseur } from '../../../core/models/fournisseur.model';
 })
 export class FournisseurListComponent implements OnInit {
   private fournisseurService = inject(FournisseurService);
+  private cdr = inject(ChangeDetectorRef);
   fournisseurs: Fournisseur[] = [];
 
   ngOnInit(): void {
@@ -104,7 +105,10 @@ export class FournisseurListComponent implements OnInit {
 
   loadFournisseurs(): void {
     this.fournisseurService.getAllFournisseurs().subscribe({
-      next: (data) => this.fournisseurs = data,
+      next: (data) => {
+        this.fournisseurs = data;
+        this.cdr.markForCheck();
+      },
       error: (err) => console.error('Erreur chargement fournisseurs', err)
     });
   }

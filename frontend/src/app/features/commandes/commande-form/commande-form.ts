@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -108,6 +108,7 @@ import { Produit } from '../../../core/models/produit.model';
   `
 })
 export class CommandeFormComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private commandeService = inject(CommandeService);
   private fournisseurService = inject(FournisseurService);
   private produitService = inject(ProduitService);
@@ -120,10 +121,16 @@ export class CommandeFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.fournisseurService.getAllFournisseurs().subscribe({
-      next: (data) => this.fournisseurs = data
+      next: (data) => {
+        this.fournisseurs = data;
+        this.cdr.markForCheck();
+      }
     });
     this.produitService.getAllProduits().subscribe({
-      next: (data) => this.produits = data
+      next: (data) => {
+        this.produits = data;
+        this.cdr.markForCheck();
+      }
     });
   }
 

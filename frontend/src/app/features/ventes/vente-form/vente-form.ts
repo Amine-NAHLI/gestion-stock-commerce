@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject , ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -139,6 +139,7 @@ import { Produit } from '../../../core/models/produit.model';
   `]
 })
 export class VenteFormComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
   private venteService = inject(VenteService);
   private clientService = inject(ClientService);
   private produitService = inject(ProduitService);
@@ -151,8 +152,18 @@ export class VenteFormComponent implements OnInit {
   lignes: LigneVente[] = [];
 
   ngOnInit(): void {
-    this.clientService.getAllClients().subscribe({ next: (data) => this.clients = data });
-    this.produitService.getAllProduits().subscribe({ next: (data) => this.produits = data });
+    this.clientService.getAllClients().subscribe({
+      next: (data) => {
+        this.clients = data;
+        this.cdr.markForCheck();
+      }
+    });
+    this.produitService.getAllProduits().subscribe({
+      next: (data) => {
+        this.produits = data;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   addLigne(): void {
@@ -166,7 +177,7 @@ export class VenteFormComponent implements OnInit {
   /** Quand on sélectionne un produit, on pré-remplit le prix de vente */
   onProduitChange(index: number): void {
     const ligne = this.lignes[index];
-    const produit = this.produits.find(p => p.id === ligne.produitId);
+    const produit = this.produits.find((p: Produit) => p.id === ligne.produitId);
     if (produit) {
       ligne.prixUnitaire = produit.prixVente;
     }
@@ -184,10 +195,11 @@ export class VenteFormComponent implements OnInit {
     };
 
     this.venteService.createVente(request).subscribe({
-      next: (vente) => this.router.navigate(['/ventes/recu', vente.id]),
-      error: (err) => {
+      next: (vente: any) => this.router.navigate(['/ventes/recu', vente.id]),
+      error: (err: any) => {
         console.error('Erreur création vente', err);
         alert(err.error?.message || 'Erreur lors de la création de la vente');
+        this.cdr.markForCheck();
       }
     });
   }
