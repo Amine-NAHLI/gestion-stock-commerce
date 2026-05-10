@@ -30,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
+    private final com.gestionstock.backend.repository.auth.UserRepository userRepository;
+    private final com.gestionstock.backend.security.JwtService jwtService;
 
     /**
      * Connexion d'un utilisateur
@@ -76,6 +78,62 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse("Erreur lors de l'inscription : " + e.getMessage(), false));
+        }
+    }
+
+    /**
+     * Endpoint public (démo) pour récupérer tous les utilisateurs afin de faciliter 
+     * le login lors de la présentation
+     * @return Liste de tous les utilisateurs (sans mot de passe)
+     */
+    @org.springframework.web.bind.annotation.GetMapping("/demo-users")
+    public ResponseEntity<?> getDemoUsers() {
+        // En vrai, il faudrait passer par le service, mais pour ce endpoint de démo, on utilise le repo directement
+        java.util.List<com.gestionstock.backend.entity.auth.User> users = userRepository.findAll();
+        
+        java.util.List<java.util.Map<String, String>> demoUsers = new java.util.ArrayList<>();
+        for (com.gestionstock.backend.entity.auth.User u : users) {
+            java.util.Map<String, String> userMap = new java.util.HashMap<>();
+            userMap.put("username", u.getUsername());
+            userMap.put("nomComplet", u.getNomComplet());
+            userMap.put("role", u.getRole().getNom());
+            demoUsers.add(userMap);
+        }
+        return ResponseEntity.ok(demoUsers);
+    }
+
+    /**
+     * Endpoint de connexion SANS MOT DE PASSE pour la présentation
+     */
+    @PostMapping("/demo-login")
+    public ResponseEntity<?> demoLogin(@RequestBody java.util.Map<String, String> request) {
+        try {
+            String username = request.get("username");
+            com.gestionstock.backend.entity.auth.User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+            org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User
+                    .withUsername(user.getUsername())
+                    .password(user.getPassword())
+                    .authorities("ROLE_" + user.getRole().getNom())
+                    .build();
+
+            // Générer le token JWT via le JwtService bean sans vérifier le mot de passe
+            String token = jwtService.generateToken(userDetails);
+            
+            JwtResponse response = new JwtResponse(
+                token,
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getNomComplet(),
+                user.getRole().getNom());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Erreur : " + e.getMessage(), false));
         }
     }
 }

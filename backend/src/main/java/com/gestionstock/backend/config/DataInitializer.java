@@ -74,30 +74,53 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     /**
-     * Crée un utilisateur admin par défaut si la table users est vide
+     * Crée les utilisateurs par défaut si la table users est vide
      */
     private void initAdminUser() {
-        if (userRepository.count() == 0) {
-            log.info("Création de l'utilisateur admin par défaut...");
+        if (userRepository.count() < 3) {
+            log.info("Création des utilisateurs de démo manquants...");
 
-            Role adminRole = roleRepository.findByNom("ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Le rôle ADMIN est introuvable"));
+            Role adminRole = roleRepository.findByNom("ADMIN").orElseThrow();
+            Role gerantRole = roleRepository.findByNom("GERANT").orElseThrow();
+            Role employeRole = roleRepository.findByNom("EMPLOYE").orElseThrow();
 
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setEmail("admin@gestionstock.com");
-            admin.setPassword(passwordEncoder.encode("admin123")); // ⚠️ BCrypt
-            admin.setNomComplet("Administrateur");
-            admin.setRole(adminRole);
-            admin.setActif(true);
-            admin.setDateCreation(LocalDateTime.now());
+            if (!userRepository.existsByUsername("admin")) {
+                User admin = new User();
+                admin.setUsername("admin");
+                admin.setEmail("admin@gestionstock.com");
+                admin.setPassword(passwordEncoder.encode("admin123"));
+                admin.setNomComplet("Administrateur");
+                admin.setRole(adminRole);
+                admin.setActif(true);
+                admin.setDateCreation(LocalDateTime.now());
+                userRepository.save(admin);
+            }
 
-            userRepository.save(admin);
+            if (!userRepository.existsByUsername("gerant")) {
+                User gerant = new User();
+                gerant.setUsername("gerant");
+                gerant.setEmail("gerant@gestionstock.com");
+                gerant.setPassword(passwordEncoder.encode("gerant123"));
+                gerant.setNomComplet("Gérant Principal");
+                gerant.setRole(gerantRole);
+                gerant.setActif(true);
+                gerant.setDateCreation(LocalDateTime.now());
+                userRepository.save(gerant);
+            }
 
-            log.info("✓ Utilisateur admin créé :");
-            log.info("    Username : admin");
-            log.info("    Password : admin123");
-            log.info("    ⚠️  À changer en production !");
+            if (!userRepository.existsByUsername("employe")) {
+                User employe = new User();
+                employe.setUsername("employe");
+                employe.setEmail("employe@gestionstock.com");
+                employe.setPassword(passwordEncoder.encode("employe123"));
+                employe.setNomComplet("Employé Caisse");
+                employe.setRole(employeRole);
+                employe.setActif(true);
+                employe.setDateCreation(LocalDateTime.now());
+                userRepository.save(employe);
+            }
+
+            log.info("✓ Utilisateurs de démo vérifiés/créés (admin, gerant, employe)");
         } else {
             log.info("Des utilisateurs existent déjà ({} users en base)", userRepository.count());
         }

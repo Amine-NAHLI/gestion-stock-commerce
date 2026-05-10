@@ -52,4 +52,23 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.tokenService.isLoggedIn();
   }
+
+  /**
+   * Récupère la liste des utilisateurs de démo pour faciliter le login
+   */
+  getDemoUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${API_URL}/demo-users`);
+  }
+
+  /**
+   * Connexion de démo (sans mot de passe)
+   */
+  demoLogin(username: string): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(`${API_URL}/demo-login`, { username }).pipe(
+      tap(response => {
+        this.tokenService.saveToken(response.token);
+        this.tokenService.saveUser(response);
+      })
+    );
+  }
 }
