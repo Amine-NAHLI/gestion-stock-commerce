@@ -20,6 +20,7 @@ public class Produit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(unique = true, length = 50)
     private String code; // Code-barres ou référence
 
@@ -29,7 +30,7 @@ public class Produit {
     @Column(length = 1000)
     private String description;
 
-    @Column(name = "prix_achat")
+    @Column(name = "prix_achat", nullable = false)
     private Double prixAchat;
 
     @Column(name = "prix_vente")
