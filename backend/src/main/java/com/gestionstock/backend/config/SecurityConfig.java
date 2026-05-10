@@ -24,6 +24,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.gestionstock.backend.security.JwtAuthenticationFilter;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 /**
  * Configuration de Spring Security
  * Définit la sécurité de l'application :
@@ -34,6 +36,7 @@ import com.gestionstock.backend.security.JwtAuthenticationFilter;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${cors.allowed-origins}")
