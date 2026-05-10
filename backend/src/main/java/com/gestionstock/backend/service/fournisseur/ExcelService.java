@@ -14,12 +14,15 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Service pour l'export de rapports au format Excel (.xlsx).
  * Génère des fichiers Excel pour les produits, fournisseurs, commandes, clients et ventes.
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ExcelService {
 
     private final ProduitRepository produitRepository;
