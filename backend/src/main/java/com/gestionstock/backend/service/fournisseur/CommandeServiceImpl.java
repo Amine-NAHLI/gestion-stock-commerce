@@ -93,6 +93,13 @@ public class CommandeServiceImpl implements CommandeService {
         // Ajouter les lignes de commande
         double montantTotal = 0.0;
         for (LigneCommandeDTO ligneDto : request.getLignes()) {
+            if (ligneDto.getQuantite() == null || ligneDto.getQuantite() <= 0) {
+                throw new IllegalArgumentException("La quantité commandée doit être supérieure à zéro");
+            }
+            if (ligneDto.getPrixUnitaire() == null || ligneDto.getPrixUnitaire() < 0) {
+                throw new IllegalArgumentException("Le prix unitaire ne peut pas être négatif");
+            }
+
             Produit produit = produitRepository.findById(ligneDto.getProduitId())
                     .orElseThrow(() -> new RuntimeException("Produit non trouvé avec l'id : " + ligneDto.getProduitId()));
 
@@ -127,6 +134,15 @@ public class CommandeServiceImpl implements CommandeService {
                 produitRepository.save(produit);
             }
             commande.setDateLivraison(LocalDateTime.now());
+        } 
+        // Si la commande était LIVREE et passe à un autre statut, on retire le stock ajouté précédemment
+        else if (commande.getStatut() == StatutCommande.LIVREE && statut != StatutCommande.LIVREE) {
+            for (LigneCommande ligne : commande.getLignes()) {
+                Produit produit = ligne.getProduit();
+                produit.setQuantiteStock(produit.getQuantiteStock() - ligne.getQuantite());
+                produitRepository.save(produit);
+            }
+            commande.setDateLivraison(null);
         }
 
         commande.setStatut(statut);
@@ -148,11 +164,10 @@ public class CommandeServiceImpl implements CommandeService {
     }
 
     /**
-     * Génère un numéro de commande unique au format CMD-YYYY-XXX
+     * Génère un numéro de commande unique au format CMD-YYYYMMDD-TIMESTAMP
      */
     private String genererNumeroCommande() {
-        String prefix = "CMD-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-";
-        long count = commandeRepository.count() + 1;
-        return prefix + String.format("%03d", count);
+        String prefix = "CMD-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "-";
+        return prefix + System.currentTimeMillis();
     }
 }

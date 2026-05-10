@@ -87,6 +87,13 @@ public class VenteServiceImpl implements VenteService {
         // Ajouter les lignes de vente et déduire le stock
         double montantTotal = 0.0;
         for (LigneVenteDTO ligneDto : lignesDto) {
+            if (ligneDto.getQuantite() == null || ligneDto.getQuantite() <= 0) {
+                throw new IllegalArgumentException("La quantité vendue doit être supérieure à zéro");
+            }
+            if (ligneDto.getPrixUnitaire() == null || ligneDto.getPrixUnitaire() < 0) {
+                throw new IllegalArgumentException("Le prix unitaire ne peut pas être négatif");
+            }
+
             Produit produit = produitRepository.findById(ligneDto.getProduitId())
                     .orElseThrow(() -> new RuntimeException("Produit non trouvé avec l'id : " + ligneDto.getProduitId()));
 
@@ -120,18 +127,24 @@ public class VenteServiceImpl implements VenteService {
 
     @Override
     public void deleteVente(Long id) {
-        if (!venteRepository.existsById(id)) {
-            throw new RuntimeException("Vente non trouvée avec l'id : " + id);
+        Vente vente = venteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vente non trouvée avec l'id : " + id));
+
+        // Restore stock
+        for (LigneVente ligne : vente.getLignes()) {
+            Produit produit = ligne.getProduit();
+            produit.setQuantiteStock(produit.getQuantiteStock() + ligne.getQuantite());
+            produitRepository.save(produit);
         }
-        venteRepository.deleteById(id);
+
+        venteRepository.delete(vente);
     }
 
     /**
-     * Génère un numéro de vente unique au format VTE-YYYY-XXX
+     * Génère un numéro de vente unique au format VTE-YYYYMMDD-TIMESTAMP
      */
     private String genererNumeroVente() {
-        String prefix = "VTE-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy")) + "-";
-        long count = venteRepository.count() + 1;
-        return prefix + String.format("%03d", count);
+        String prefix = "VTE-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "-";
+        return prefix + System.currentTimeMillis();
     }
 }
