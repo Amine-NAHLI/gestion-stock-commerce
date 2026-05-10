@@ -120,3 +120,18 @@ h1, h2, h3, h4, h5, h6, .display-font {
     transform: translateY(-4px);
   }
 }
+
+/* Global Print Styles */
+@media print {
+  app-sidebar, app-navbar {
+    display: none !important;
+  }
+  body, .main-content {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .card-premium {
+    box-shadow: none !important;
+  }
+}
