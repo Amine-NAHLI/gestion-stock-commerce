@@ -49,11 +49,20 @@
           </div>
 
           <!-- Email -->
-          <div class="col-12 mb-2">
+          <div class="col-md-6 col-12 mb-2">
             <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Email *</label>
             <div class="input-group-premium">
               <i class="bi bi-envelope"></i>
               <input type="email" name="email" class="form-control" placeholder="jean@exemple.com" [(ngModel)]="data.email" required>
+            </div>
+          </div>
+
+          <!-- Confirmation Email -->
+          <div class="col-md-6 col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Confirmer l'email *</label>
+            <div class="input-group-premium">
+              <i class="bi bi-envelope-check"></i>
+              <input type="email" name="confirmEmail" class="form-control" placeholder="Confirmez votre email" [(ngModel)]="confirmEmail" required>
             </div>
           </div>
 

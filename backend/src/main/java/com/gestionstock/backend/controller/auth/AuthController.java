@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gestionstock.backend.dto.auth.JwtResponse;
@@ -20,10 +22,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Controller REST pour l'authentification
- * Endpoints : 
- * - POST /api/auth/login
- * - POST /api/auth/register
+ * Controller REST pour l'authentification Endpoints : - POST /api/auth/login -
+ * POST /api/auth/register
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -36,7 +36,7 @@ public class AuthController {
 
     /**
      * Connexion d'un utilisateur
-     * 
+     *
      * @param request LoginRequest contenant username + password
      * @return JwtResponse avec le token JWT et les infos utilisateur
      */
@@ -66,7 +66,7 @@ public class AuthController {
 
     /**
      * Inscription d'un nouvel utilisateur
-     * 
+     *
      * @param request RegisterRequest contenant les infos du nouvel utilisateur
      * @return MessageResponse avec succès ou erreur
      */
@@ -86,16 +86,32 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/verify-email")
+    public ResponseEntity<MessageResponse> verifyEmail(@RequestParam("token") String token) {
+        try {
+            MessageResponse response = authService.verifyEmailToken(token);
+            if (response.getSuccess()) {
+                return ResponseEntity.ok(response);
+            }
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Erreur lors de la vérification de l'email : " + e.getMessage(), false));
+        }
+    }
+
     /**
-     * Endpoint public (démo) pour récupérer tous les utilisateurs afin de faciliter 
-     * le login lors de la présentation
+     * Endpoint public (démo) pour récupérer tous les utilisateurs afin de
+     * faciliter le login lors de la présentation
+     *
      * @return Liste de tous les utilisateurs (sans mot de passe)
      */
     @org.springframework.web.bind.annotation.GetMapping("/demo-users")
     public ResponseEntity<?> getDemoUsers() {
         // En vrai, il faudrait passer par le service, mais pour ce endpoint de démo, on utilise le repo directement
         java.util.List<com.gestionstock.backend.entity.auth.User> users = userRepository.findAll();
-        
+
         java.util.List<java.util.Map<String, String>> demoUsers = new java.util.ArrayList<>();
         for (com.gestionstock.backend.entity.auth.User u : users) {
             java.util.Map<String, String> userMap = new java.util.HashMap<>();
@@ -131,14 +147,14 @@ public class AuthController {
 
             // Générer le token JWT via le JwtService bean sans vérifier le mot de passe
             String token = jwtService.generateToken(userDetails);
-            
+
             JwtResponse response = new JwtResponse(
-                token,
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getNomComplet(),
-                user.getRole().getNom());
+                    token,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getNomComplet(),
+                    user.getRole().getNom());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
