@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProduitService } from '../../../core/services/produit.service';
 import { Categorie, Produit } from '../../../core/models/produit.model';
+import { AiService } from '../../../core/services/ai.service';
 
 @Component({
   selector: 'app-produit-form',
@@ -35,7 +36,15 @@ import { Categorie, Produit } from '../../../core/models/produit.model';
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label fw-semibold">Description</label>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label fw-semibold mb-0">Description</label>
+                    <button type="button" (click)="generateAiDescription()" 
+                            [disabled]="!produit.nom || isGenerating"
+                            class="btn btn-outline-primary btn-sm border-0 bg-light-primary">
+                      <i class="bi bi-magic me-1"></i>
+                      {{ isGenerating ? "Génération..." : "Générer avec l'IA" }}
+                    </button>
+                  </div>
                   <textarea name="description" [(ngModel)]="produit.description" class="form-control rounded-3" rows="3" placeholder="Détails du produit..."></textarea>
                 </div>
 
@@ -102,9 +111,12 @@ import { Categorie, Produit } from '../../../core/models/produit.model';
 })
 export class ProduitFormComponent implements OnInit {
   private produitService = inject(ProduitService);
+  private aiService = inject(AiService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+
+  isGenerating = false;
 
   produit: Produit = {
     nom: '',
@@ -131,6 +143,24 @@ export class ProduitFormComponent implements OnInit {
         error: (err) => console.error('Erreur chargement produit', err)
       });
     }
+  }
+
+  generateAiDescription(): void {
+    if (!this.produit.nom) return;
+    
+    this.isGenerating = true;
+    this.aiService.generateDescription(this.produit.nom).subscribe({
+      next: (desc) => {
+        this.produit.description = desc;
+        this.isGenerating = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Erreur IA', err);
+        this.isGenerating = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   loadCategories(): void {
