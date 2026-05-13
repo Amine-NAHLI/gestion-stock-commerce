@@ -32,11 +32,11 @@ public class AuditLog {
     @Column(name = "target_username")
     private String targetUsername;
 
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    @Column(name = "date_action", nullable = false)
+    private LocalDateTime dateAction;
 
     @PrePersist
     protected void onCreate() {
-        this.timestamp = LocalDateTime.now();
+        this.dateAction = LocalDateTime.now();
     }
 }

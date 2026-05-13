@@ -141,14 +141,14 @@ public class UserService {
                 .details(details)
                 .adminUsername(adminUsername)
                 .targetUsername(targetUsername)
-                .timestamp(LocalDateTime.now())
+                .dateAction(LocalDateTime.now())
                 .build();
         
         auditLogRepository.save(log);
     }
 
     public List<AuditLog> getAuditLogs() {
-        return auditLogRepository.findAllByOrderByTimestampDesc();
+        return auditLogRepository.findAllByOrderByDateActionDesc();
     }
 
     private UserDTO mapToDTO(User user) {

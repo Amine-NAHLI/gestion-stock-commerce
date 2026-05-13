@@ -189,7 +189,7 @@ import { UtilisateurFormComponent } from './utilisateur-form';
             </thead>
             <tbody class="border-top-0">
               <tr *ngFor="let log of auditLogs">
-                <td class="ps-4 small text-secondary">{{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="ps-4 small text-secondary">{{ log.dateAction | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>
                   <div class="d-flex align-items-center">
                     <div class="avatar-sm me-2 bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 24px; height: 24px; font-size: 0.7rem;">
