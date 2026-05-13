@@ -12,29 +12,29 @@ import { FormsModule } from '@angular/forms';
   template: `
     <div class="container-fluid py-5 px-4">
       <!-- En-tête -->
-      <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
         <div>
-          <h1 class="display-6 fw-bold text-white mb-1">Catégories d'Articles</h1>
-          <p class="text-secondary opacity-75 mb-0">Structurez votre inventaire par familles de produits</p>
+          <h1 class="h2 fw-bold text-dark mb-2">Catégories d'Articles</h1>
+          <p class="text-muted mb-0">Structurez votre inventaire par familles de produits.</p>
         </div>
-        <a routerLink="new" class="btn btn-primary btn-lg d-flex align-items-center gap-2 shadow-lg px-4 rounded-pill">
+        <a routerLink="new" class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2 shadow-sm rounded-pill">
           <i class="bi bi-folder-plus"></i>
           <span>Nouvelle Catégorie</span>
         </a>
       </div>
 
       <!-- Filtres -->
-      <div class="card bg-dark-glass border-0 mb-5 shadow-lg overflow-hidden">
+      <div class="card border-0 mb-5 shadow-sm overflow-hidden">
         <div class="card-body p-4">
           <div class="row g-4 align-items-center">
-            <div class="col-md-12">
+            <div class="col-12">
               <div class="input-group input-group-lg custom-search">
-                <span class="input-group-text bg-dark-light border-0 text-secondary">
+                <span class="input-group-text bg-white border-0 text-secondary">
                   <i class="bi bi-search"></i>
                 </span>
                 <input 
                   type="text" 
-                  class="form-control bg-dark-light border-0 text-white shadow-none ps-0" 
+                  class="form-control bg-white border-0 text-dark shadow-none ps-3" 
                   placeholder="Rechercher une catégorie..."
                   [(ngModel)]="searchTerm"
                   (input)="filterCategories()"
@@ -47,10 +47,10 @@ import { FormsModule } from '@angular/forms';
 
       <!-- Grille des catégories -->
       <div class="row g-4">
-        <div class="col-md-6 col-lg-4 col-xl-3" *ngFor="let cat of filteredCategories">
-          <div class="card h-100 bg-dark-glass border-0 category-card shadow-lg">
+        <div class="col-sm-6 col-lg-4 col-xl-3" *ngFor="let cat of filteredCategories">
+          <div class="card h-100 border-0 category-card shadow-sm">
             <div class="card-body p-4">
-              <div class="d-flex justify-content-between align-items-start mb-4">
+              <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="category-icon-container shadow-sm">
                   <i class="bi bi-folder2-open text-primary fs-3"></i>
                 </div>
@@ -58,11 +58,11 @@ import { FormsModule } from '@angular/forms';
                   <button class="btn btn-icon-only text-secondary p-0 shadow-none" data-bs-toggle="dropdown">
                     <i class="bi bi-three-dots-vertical fs-5"></i>
                   </button>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary">
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                     <li><a class="dropdown-item py-2" [routerLink]="['edit', cat.id]">
                       <i class="bi bi-pencil-square me-2"></i> Modifier
                     </a></li>
-                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item py-2 text-danger" href="javascript:void(0)" (click)="deleteCategorie(cat.id!)">
                       <i class="bi bi-trash3-fill me-2"></i> Supprimer
                     </a></li>
@@ -70,15 +70,15 @@ import { FormsModule } from '@angular/forms';
                 </div>
               </div>
               
-              <h4 class="text-white fw-bold mb-2">{{ cat.nom }}</h4>
-              <p class="text-secondary small mb-4 line-clamp-3" style="min-height: 4.5rem;">
+              <h4 class="text-dark fw-semibold mb-2">{{ cat.nom }}</h4>
+              <p class="text-muted small mb-4 line-clamp-3" style="min-height: 4.5rem;">
                 {{ cat.description || 'Aucune description fournie pour cette catégorie.' }}
               </p>
               
-              <div class="d-flex justify-content-between align-items-center pt-4 border-top border-dark-light">
+              <div class="d-flex justify-content-between align-items-center pt-4 border-top">
                 <div class="d-flex flex-column">
-                  <span class="text-secondary uppercase fw-bold opacity-50" style="font-size: 0.6rem; letter-spacing: 1px;">CRÉÉ LE</span>
-                  <span class="text-white-50 small fw-medium">{{ cat.dateCreation | date:'dd MMM yyyy' }}</span>
+                  <span class="text-secondary text-uppercase fw-semibold small tracking-text">Créé le</span>
+                  <span class="text-muted small">{{ cat.dateCreation | date:'dd MMM yyyy' }}</span>
                 </div>
                 <a [routerLink]="['/produits']" [queryParams]="{categorie: cat.id}" class="btn btn-outline-primary btn-sm rounded-pill px-4">
                   Explorer
@@ -90,10 +90,10 @@ import { FormsModule } from '@angular/forms';
 
         <!-- Empty State -->
         <div *ngIf="filteredCategories.length === 0" class="col-12 text-center py-5">
-          <div class="py-5 opacity-50">
-            <i class="bi bi-folder-x display-1 mb-4 d-block"></i>
-            <h4 class="text-white">Aucune catégorie trouvée</h4>
-            <p class="text-secondary">Structurez votre inventaire en créant des catégories pertinentes.</p>
+          <div class="py-5">
+            <i class="bi bi-folder-x display-1 mb-4 d-block text-secondary"></i>
+            <h4 class="text-dark">Aucune catégorie trouvée</h4>
+            <p class="text-muted">Structurez votre inventaire en créant des catégories pertinentes.</p>
             <button class="btn btn-primary mt-3 px-4 rounded-pill" (click)="searchTerm=''; filterCategories()">
               Voir toutes les catégories
             </button>

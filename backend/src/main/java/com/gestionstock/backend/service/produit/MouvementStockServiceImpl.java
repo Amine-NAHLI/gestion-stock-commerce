@@ -5,7 +5,6 @@ import com.gestionstock.backend.dto.produit.ProduitMapper;
 import com.gestionstock.backend.entity.auth.User;
 import com.gestionstock.backend.entity.produit.MouvementStock;
 import com.gestionstock.backend.entity.produit.Produit;
-import com.gestionstock.backend.entity.enums.TypeMouvement;
 import com.gestionstock.backend.repository.auth.UserRepository;
 import com.gestionstock.backend.repository.produit.MouvementStockRepository;
 import com.gestionstock.backend.repository.produit.ProduitRepository;
