@@ -1,140 +1,122 @@
-<div class="register-container">
-  <div class="register-card">
-    <div class="register-header">
-      <i class="bi bi-person-plus logo-icon"></i>
-      <h1>Créer un compte</h1>
-      <p class="subtitle">Rejoignez le système de gestion de stock</p>
+<div class="login-wrapper">
+  <!-- Panneau latéral (Identique au login pour la cohérence) -->
+  <div class="login-aside d-none d-lg-flex">
+    <div class="aside-content">
+      <div class="aside-logo mb-4">
+        <i class="bi bi-person-plus-fill"></i>
+      </div>
+      <h1 class="display-font text-white mb-3">Rejoignez-nous</h1>
+      <p class="text-white opacity-75 fs-5">Créez votre compte et commencez à gérer votre inventaire en quelques clics.</p>
+      
+      <div class="mt-auto">
+        <div class="glass p-4 rounded-4 text-white">
+          <p class="mb-0 small fw-medium italic text-opacity-75">"Un stock bien géré est le cœur d'une entreprise prospère."</p>
+        </div>
+      </div>
     </div>
+    <div class="aside-blob"></div>
+  </div>
 
-    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-      <!-- Username -->
-      <div class="mb-3">
-        <label for="username" class="form-label">
-          <i class="bi bi-person"></i> Nom d'utilisateur *
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          class="form-control"
-          placeholder="ex: jdupont"
-          [(ngModel)]="data.username"
-          required
-          minlength="3">
+  <!-- Panneau principal du formulaire -->
+  <div class="login-main py-5">
+    <div class="login-card-modern my-auto">
+      <div class="d-lg-none mb-4 text-center">
+        <i class="bi bi-box-seam text-primary fs-1"></i>
+        <h2 class="display-font mt-2">STOCKLY</h2>
       </div>
 
-      <!-- Nom complet -->
-      <div class="mb-3">
-        <label for="nomComplet" class="form-label">
-          <i class="bi bi-person-vcard"></i> Nom complet
-        </label>
-        <input
-          type="text"
-          id="nomComplet"
-          name="nomComplet"
-          class="form-control"
-          placeholder="ex: Jean Dupont"
-          [(ngModel)]="data.nomComplet">
-      </div>
+      <h2 class="display-font text-dark mb-2">Inscription</h2>
+      <p class="text-secondary mb-4">Remplissez les informations ci-dessous pour créer votre compte.</p>
 
-      <!-- Email -->
-      <div class="mb-3">
-        <label for="email" class="form-label">
-          <i class="bi bi-envelope"></i> Email *
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          class="form-control"
-          placeholder="ex: jean@example.com"
-          [(ngModel)]="data.email"
-          required>
-      </div>
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        <div class="row g-3">
+          <!-- Nom d'utilisateur -->
+          <div class="col-md-6 col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Identifiant *</label>
+            <div class="input-group-premium">
+              <i class="bi bi-at"></i>
+              <input type="text" name="username" class="form-control" placeholder="jdupont" [(ngModel)]="data.username" required minlength="3">
+            </div>
+          </div>
 
-      <!-- Rôle -->
-      <div class="mb-3">
-        <label for="role" class="form-label">
-          <i class="bi bi-shield"></i> Rôle
-        </label>
-        <select
-          id="role"
-          name="role"
-          class="form-select"
-          [(ngModel)]="data.role">
-          <option value="EMPLOYE">Employé</option>
-          <option value="GERANT">Gérant</option>
-          <option value="ADMIN">Administrateur</option>
-        </select>
-      </div>
+          <!-- Nom Complet -->
+          <div class="col-md-6 col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Nom Complet</label>
+            <div class="input-group-premium">
+              <i class="bi bi-person-vcard"></i>
+              <input type="text" name="nomComplet" class="form-control" placeholder="Jean Dupont" [(ngModel)]="data.nomComplet">
+            </div>
+          </div>
 
-      <!-- Password -->
-      <div class="mb-3">
-        <label for="password" class="form-label">
-          <i class="bi bi-lock"></i> Mot de passe * (min 6 caractères)
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          class="form-control"
-          placeholder="••••••••"
-          [(ngModel)]="data.password"
-          required
-          minlength="6">
-      </div>
+          <!-- Email -->
+          <div class="col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Email *</label>
+            <div class="input-group-premium">
+              <i class="bi bi-envelope"></i>
+              <input type="email" name="email" class="form-control" placeholder="jean@exemple.com" [(ngModel)]="data.email" required>
+            </div>
+          </div>
 
-      <!-- Confirm Password -->
-      <div class="mb-3">
-        <label for="confirmPassword" class="form-label">
-          <i class="bi bi-lock-fill"></i> Confirmer le mot de passe *
-        </label>
-        <input
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          class="form-control"
-          placeholder="••••••••"
-          [(ngModel)]="confirmPassword"
-          required>
-      </div>
+          <!-- Rôle -->
+          <div class="col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Rôle souhaité</label>
+            <div class="input-group-premium">
+              <i class="bi bi-shield-lock"></i>
+              <select name="role" class="form-select ps-5" [(ngModel)]="data.role" style="height: 3.5rem; background-color: #f1f5f9; border-radius: 0.75rem; border: none; font-weight: 500;">
+                <option value="EMPLOYE">Employé</option>
+                <option value="GERANT">Gérant</option>
+                <option value="ADMIN">Administrateur</option>
+              </select>
+            </div>
+          </div>
 
-      <!-- Message de succès -->
-      @if (successMessage()) {
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-          <i class="bi bi-check-circle-fill me-2"></i>
-          <div>{{ successMessage() }}</div>
+          <!-- Mot de passe -->
+          <div class="col-md-6 col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Mot de passe *</label>
+            <div class="input-group-premium">
+              <i class="bi bi-lock"></i>
+              <input type="password" name="password" class="form-control" placeholder="••••••••" [(ngModel)]="data.password" required minlength="6">
+            </div>
+          </div>
+
+          <!-- Confirmation -->
+          <div class="col-md-6 col-12 mb-2">
+            <label class="form-label small fw-bold text-uppercase letter-spacing-1 text-secondary">Confirmation *</label>
+            <div class="input-group-premium">
+              <i class="bi bi-lock-fill"></i>
+              <input type="password" name="confirmPassword" class="form-control" placeholder="••••••••" [(ngModel)]="confirmPassword" required>
+            </div>
+          </div>
         </div>
-      }
 
-      <!-- Message d'erreur -->
-      @if (errorMessage()) {
-        <div class="alert alert-danger d-flex align-items-center" role="alert">
-          <i class="bi bi-exclamation-triangle-fill me-2"></i>
-          <div>{{ errorMessage() }}</div>
-        </div>
-      }
-
-      <!-- Bouton -->
-      <button
-        type="submit"
-        class="btn btn-success btn-lg w-100 mt-3"
-        [disabled]="isLoading()">
-        @if (isLoading()) {
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          Création en cours...
-        } @else {
-          <i class="bi bi-person-plus-fill me-2"></i>
-          Créer mon compte
+        @if (successMessage()) {
+          <div class="alert bg-success bg-opacity-10 border-0 text-success small rounded-3 p-3 my-4 d-flex align-items-center">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            {{ successMessage() }}
+          </div>
         }
-      </button>
-    </form>
 
-    <div class="register-footer">
-      <p class="text-center mb-0">
-        Déjà un compte ?
-        <a routerLink="/login" class="login-link">Se connecter</a>
-      </p>
+        @if (errorMessage()) {
+          <div class="alert bg-danger bg-opacity-10 border-0 text-danger small rounded-3 p-3 my-4 d-flex align-items-center">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <button type="submit" class="btn btn-primary w-100 py-3 mt-4 mb-4 shadow-sm" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Création en cours...
+          } @else {
+            <span class="me-2">Créer mon compte</span>
+            <i class="bi bi-person-plus-fill"></i>
+          }
+        </button>
+
+        <p class="text-center text-secondary small mb-0">
+          Vous avez déjà un compte ? <a routerLink="/login" class="text-primary fw-bold text-decoration-none hover-underline">Se connecter</a>
+        </p>
+      </form>
     </div>
   </div>
 </div>
