@@ -80,7 +80,7 @@ public class UserService {
                     .orElseThrow(() -> new IllegalArgumentException("Rôle non trouvé : " + roleName));
             user.setRole(role);
         }
-
+        if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
 
