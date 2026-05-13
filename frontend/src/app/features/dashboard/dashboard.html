@@ -152,6 +152,43 @@
       </div>
     </div>
 
+    <!-- AI Marketing Insights Section -->
+    <div class="card-premium border-0 shadow-sm mb-5 overflow-hidden" style="background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);">
+      <div class="p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+              <i class="bi bi-magic text-primary fs-4"></i>
+            </div>
+            <div>
+              <h5 class="mb-0 fw-bold">Intelligence Artificielle : Conseils Marketing</h5>
+              <p class="mb-0 small text-secondary">Analyses et stratégies générées par Groq Llama3</p>
+            </div>
+          </div>
+          <button (click)="loadAiAdvice()" [disabled]="isAiLoading()" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+            <i class="bi bi-arrow-clockwise me-1" [class.spin]="isAiLoading()"></i> Ré-analyser
+          </button>
+        </div>
+
+        @if (isAiLoading()) {
+          <div class="py-4 text-center">
+            <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+            <span class="text-secondary small">L'IA analyse vos données...</span>
+          </div>
+        } @else if (marketingAdvice()) {
+          <div class="ai-advice-content p-3 rounded-4 bg-white border border-light shadow-sm">
+            <div class="text-dark" style="white-space: pre-line; line-height: 1.6;">
+              {{ marketingAdvice() }}
+            </div>
+          </div>
+        } @else {
+          <div class="text-center py-4 opacity-50">
+            <p class="small mb-0">Cliquez sur ré-analyser pour obtenir des conseils.</p>
+          </div>
+        }
+      </div>
+    </div>
+
     <!-- Alert Section -->
     @if (stats()!.produitsStockBas > 0) {
       <div class="card-premium border-start border-4 border-warning overflow-hidden mb-5">

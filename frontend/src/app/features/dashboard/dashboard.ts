@@ -10,6 +10,8 @@ import { JwtResponse } from '../../core/models/auth.model';
 // Enregistrer tous les composants Chart.js
 Chart.register(...registerables);
 
+import { AiService } from '../../core/services/ai.service';
+
 @Component({
   selector: 'app-dashboard',
   imports: [CommonModule, BaseChartDirective],
@@ -21,11 +23,15 @@ export class Dashboard implements OnInit {
 
   private dashboardService = inject(DashboardService);
   private tokenService = inject(TokenService);
+  private aiService = inject(AiService);
 
   currentUser: JwtResponse | null = null;
   stats = signal<DashboardStats | null>(null);
   isLoading = signal(true);
   errorMessage = signal('');
+  
+  marketingAdvice = signal<string>('');
+  isAiLoading = signal(false);
 
   // ============= CONFIGURATION GRAPHIQUE LIGNES (Ventes par mois) =============
   lineChartData: ChartConfiguration<'line'>['data'] = {
@@ -99,6 +105,22 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
     this.currentUser = this.tokenService.getUser();
     this.loadStats();
+    this.loadAiAdvice();
+  }
+
+  loadAiAdvice(): void {
+    this.isAiLoading.set(true);
+    this.aiService.getMarketingAdvice().subscribe({
+      next: (advice) => {
+        this.marketingAdvice.set(advice);
+        this.isAiLoading.set(false);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.isAiLoading.set(false);
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   /**
