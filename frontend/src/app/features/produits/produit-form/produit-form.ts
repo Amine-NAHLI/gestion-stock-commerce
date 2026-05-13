@@ -29,8 +29,9 @@ import { Categorie, Produit } from '../../../core/models/produit.model';
                   <input type="text" name="nom" [(ngModel)]="produit.nom" class="form-control rounded-3" required placeholder="ex: Jus d'Orange 1L">
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label fw-semibold">Code / Référence *</label>
-                  <input type="text" name="code" [(ngModel)]="produit.code" class="form-control rounded-3" required placeholder="ex: PRD-001">
+                  <label class="form-label fw-semibold">Code / Référence</label>
+                  <input type="text" name="code" [(ngModel)]="produit.code" class="form-control rounded-3" placeholder="Généré automatiquement si vide">
+                  <div class="form-text small opacity-75">Laissez vide pour une génération automatique.</div>
                 </div>
 
                 <div class="col-12">

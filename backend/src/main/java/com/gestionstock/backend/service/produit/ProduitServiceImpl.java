@@ -63,7 +63,22 @@ public class ProduitServiceImpl implements ProduitService {
             produit.setFournisseur(fournisseur);
         }
 
+        // Génération automatique du code si non fourni
+        if (produit.getCode() == null || produit.getCode().isEmpty()) {
+            produit.setCode(generateUniqueCode());
+        }
+
         return produitMapper.toDto(produitRepository.save(produit));
+    }
+
+    private String generateUniqueCode() {
+        String code;
+        do {
+            // Génère un code type PRD-XXXXXX (6 caractères aléatoires)
+            String suffix = java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+            code = "PRD-" + suffix;
+        } while (produitRepository.findByCode(code).isPresent());
+        return code;
     }
 
     @Override
