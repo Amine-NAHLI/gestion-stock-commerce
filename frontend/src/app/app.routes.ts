@@ -152,7 +152,7 @@ export const routes: Routes = [
       },
       {
         path: 'utilisateurs',
-        loadComponent: () => import('./shared/coming-soon/coming-soon').then(m => m.ComingSoon)
+        loadComponent: () => import('./features/utilisateurs/utilisateur-list').then(m => m.UtilisateurListComponent)
       }
     ]
   },

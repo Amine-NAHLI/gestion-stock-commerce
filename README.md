@@ -10,9 +10,7 @@
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=json-web-tokens&logoColor=000000)
 ![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
 
-Une solution Full-Stack moderne et robuste pour la gestion d'inventaire, conçue spécifiquement pour les épiceries et petites boutiques de proximité. Suivez vos stocks en temps réel, gérez vos fournisseurs et analysez vos ventes avec précision.
-
----
+## Une solution Full-Stack moderne et robuste pour la gestion d'inventaire, conçue spécifiquement pour les épiceries et petites boutiques de proximité. Suivez vos stocks en temps réel, gérez vos fournisseurs et analysez vos ventes avec précision.
 
 ## 🚀 Aperçu Rapide
 
@@ -20,6 +18,7 @@ Une solution Full-Stack moderne et robuste pour la gestion d'inventaire, conçue
 > Cette application a été conçue pour offrir une expérience utilisateur fluide ("Zoneless" Angular) et une sécurité de niveau entreprise (Spring Security + JWT).
 
 ### ✨ Fonctionnalités Clés
+
 - **📊 Dashboard IA-Ready** : Statistiques en temps réel sur le chiffre d'affaires et les ruptures de stock.
 - **🛡️ Sécurité Avancée** : Authentification par token JWT avec gestion fine des rôles (Admin/Gérant/Employé).
 - **📦 Gestion d'Inventaire** : Suivi des mouvements (entrées/sorties), alertes de seuil critique.
@@ -39,7 +38,7 @@ graph TD
     D --> E[Business Service Layer]
     E --> F[Spring Data JPA]
     F --> G[(MySQL Database)]
-    
+
     subgraph "Backend (Spring Boot)"
     B
     C
@@ -73,23 +72,25 @@ erDiagram
 
 ## 🛠️ Stack Technique
 
-| Technologie | Version | Usage |
-| :--- | :--- | :--- |
-| **Java** | 17+ | Langage robuste côté serveur |
-| **Spring Boot** | 3.x | Framework d'API et Sécurité |
-| **Angular** | 21 | Framework de Single Page Application |
-| **MySQL** | 8.0 | Stockage de données relationnel |
-| **Bootstrap** | 5.3 | Design UI et Responsive |
-| **Chart.js** | 4.x | Visualisation de données |
+| Technologie     | Version | Usage                                |
+| :-------------- | :------ | :----------------------------------- |
+| **Java**        | 17+     | Langage robuste côté serveur         |
+| **Spring Boot** | 3.x     | Framework d'API et Sécurité          |
+| **Angular**     | 21      | Framework de Single Page Application |
+| **MySQL**       | 8.0     | Stockage de données relationnel      |
+| **Bootstrap**   | 5.3     | Design UI et Responsive              |
+| **Chart.js**    | 4.x     | Visualisation de données             |
 
 ---
 
 ## 💻 Installation & Configuration
 
 ### 1️⃣ Base de Données
+
 Créez une base MySQL nommée `gestion_stock_db`. Le système créera automatiquement les tables au premier lancement grâce à Hibernate.
 
 ### 2️⃣ Backend (API)
+
 ```bash
 cd backend
 mvn clean install
@@ -97,6 +98,7 @@ mvn spring-boot:run
 ```
 
 ### 3️⃣ Frontend (UI)
+
 ```bash
 cd frontend
 npm install
@@ -118,6 +120,7 @@ npm start
 ---
 
 ## 📝 Licence
+
 Distribué sous licence MIT. Voir `LICENSE` pour plus d'informations.
 
 <p align="center">
