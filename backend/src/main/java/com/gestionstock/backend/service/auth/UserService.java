@@ -67,7 +67,8 @@ public class UserService {
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
         user.setNomComplet(userDetails.getNomComplet());
-        user.setActif(userDetails.getActif());
+        // On ne modifie PAS l'état 'actif' ou 'approbation' ici, 
+        // cela doit passer par toggleStatus ou approveUser
 
         if (roleName != null && !roleName.isEmpty()) {
             Role role = roleRepository.findByNom(roleName)

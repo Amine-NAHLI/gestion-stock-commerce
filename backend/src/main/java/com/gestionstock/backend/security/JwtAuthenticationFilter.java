@@ -72,8 +72,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            // Si le compte est désactivé, on renvoie une erreur 403 immédiatement
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"message\": \"" + e.getMessage() + "\", \"success\": false}");
+            return; // Arrêter la chaîne de filtres
         } catch (Exception e) {
-            // En cas d'erreur (token invalide, expiré, etc.), on log et on continue
+            // En cas d'autre erreur (token invalide, expiré, etc.), on log et on continue
+            // (L'utilisateur sera traité comme anonyme et bloqué par la config de sécurité si nécessaire)
             logger.error("Erreur lors de la validation du token JWT : " + e.getMessage());
         }
 
