@@ -43,4 +43,8 @@ export class UserService {
   rejectUser(id: number): Observable<any> {
     return this.http.delete(`${API_URL}/${id}/reject`);
   }
+
+  getAuditLogs(): Observable<any[]> {
+    return this.http.get<any[]>(`${API_URL}/audit-logs`);
+  }
 }

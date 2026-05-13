@@ -79,4 +79,9 @@ public class UserController {
         userService.rejectUser(id);
         return ResponseEntity.ok(new MessageResponse("Demande d'inscription rejetée et utilisateur supprimé"));
     }
+
+    @GetMapping("/audit-logs")
+    public ResponseEntity<List<com.gestionstock.backend.entity.auth.AuditLog>> getAuditLogs() {
+        return ResponseEntity.ok(userService.getAuditLogs());
+    }
 }

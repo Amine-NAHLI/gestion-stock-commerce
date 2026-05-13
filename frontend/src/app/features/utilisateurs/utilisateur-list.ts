@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/user';
+import { NotificationService } from '../../core/services/notification';
 import { User } from '../../core/models/user.model';
 import { UtilisateurFormComponent } from './utilisateur-form';
 
@@ -16,7 +17,7 @@ import { UtilisateurFormComponent } from './utilisateur-form';
       <div class="d-flex justify-content-between align-items-end mb-5">
         <div>
           <h1 class="display-font text-dark mb-1">Gestion des Utilisateurs</h1>
-          <p class="text-secondary mb-0">Administrez les accès, les rôles et les demandes d'inscription.</p>
+          <p class="text-secondary mb-0">Administrez les accès, les rôles et consultez l'historique des actions.</p>
         </div>
         <button class="btn btn-primary shadow-sm px-4 py-2" (click)="openAddModal()">
           <i class="bi bi-person-plus-fill"></i>
@@ -39,10 +40,15 @@ import { UtilisateurFormComponent } from './utilisateur-form';
             </span>
           </button>
         </li>
+        <li class="nav-item">
+          <button class="nav-link px-4 py-2 rounded-3 fw-bold" [class.active]="activeTab === 'audit'" (click)="setTab('audit')">
+            <i class="bi bi-clock-history me-2"></i>Historique des actions
+          </button>
+        </li>
       </ul>
 
       <!-- Filtres et Recherche -->
-      <div class="card-premium p-4 mb-4 border-0">
+      <div class="card-premium p-4 mb-4 border-0" *ngIf="activeTab !== 'audit'">
         <div class="row g-3 align-items-center">
           <div class="col-md-8">
             <div class="input-group">
@@ -75,7 +81,7 @@ import { UtilisateurFormComponent } from './utilisateur-form';
       </div>
 
       <!-- Liste des utilisateurs (Tableau) -->
-      <div class="card-premium overflow-hidden border-0">
+      <div class="card-premium overflow-hidden border-0" *ngIf="activeTab !== 'audit'">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-light text-secondary small text-uppercase fw-bold letter-spacing-1">
@@ -160,6 +166,56 @@ import { UtilisateurFormComponent } from './utilisateur-form';
                     <i class="bi bi-people text-light display-1 mb-3 d-block opacity-50"></i>
                     <h4 class="text-secondary">Aucun résultat</h4>
                     <p class="text-muted">Il n'y a actuellement aucune donnée dans cette section.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Onglet Historique -->
+      <div class="card-premium overflow-hidden border-0" *ngIf="activeTab === 'audit'">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-secondary small text-uppercase fw-bold letter-spacing-1">
+              <tr>
+                <th class="ps-4 py-3">Date</th>
+                <th>Administrateur</th>
+                <th>Action</th>
+                <th>Cible</th>
+                <th>Détails</th>
+              </tr>
+            </thead>
+            <tbody class="border-top-0">
+              <tr *ngFor="let log of auditLogs">
+                <td class="ps-4 small text-secondary">{{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-sm me-2 bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 24px; height: 24px; font-size: 0.7rem;">
+                      {{ log.adminUsername.substring(0, 1).toUpperCase() }}
+                    </div>
+                    <span class="fw-bold small">{{ log.adminUsername }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getActionBadgeClass(log.action)">
+                    {{ log.action }}
+                  </span>
+                </td>
+                <td>
+                  <span class="text-dark small fw-medium">@{{ log.targetUsername }}</span>
+                </td>
+                <td>
+                  <span class="text-secondary small">{{ log.details }}</span>
+                </td>
+              </tr>
+              <tr *ngIf="auditLogs.length === 0">
+                <td colspan="5" class="text-center py-5">
+                  <div class="py-4 text-center">
+                    <i class="bi bi-journal-text text-light display-1 mb-3 d-block opacity-50"></i>
+                    <h4 class="text-secondary">Aucun historique</h4>
+                    <p class="text-muted">Les actions administratives apparaîtront ici.</p>
                   </div>
                 </td>
               </tr>
@@ -283,22 +339,19 @@ import { UtilisateurFormComponent } from './utilisateur-form';
       &.action-edit:hover { color: #d97706; border-color: #fef3c7; background: #fffbeb; }
       &.action-delete:hover { color: #dc2626; border-color: #fee2e2; background: #fef2f2; }
     }
-
-    .input-group-text {
-      border: 1px solid #e2e8f0;
-      border-radius: 0.75rem 0 0 0.75rem;
-    }
   `]
 })
 export class UtilisateurListComponent implements OnInit {
   private userService = inject(UserService);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   users: User[] = [];
   displayedUsers: User[] = [];
   pendingRequests: User[] = [];
+  auditLogs: any[] = [];
   
-  activeTab: 'users' | 'requests' = 'users';
+  activeTab: 'users' | 'requests' | 'audit' = 'users';
   searchTerm: string = '';
   roleFilter: string = '';
 
@@ -318,20 +371,38 @@ export class UtilisateurListComponent implements OnInit {
         this.filterUsers();
         this.cdr.markForCheck();
       },
-      error: (err) => console.error('Erreur lors du chargement des utilisateurs', err)
+      error: (err) => {
+        this.notificationService.show('Erreur lors du chargement des utilisateurs', 'error');
+        console.error(err);
+      }
     });
   }
 
-  setTab(tab: 'users' | 'requests'): void {
+  loadAuditLogs(): void {
+    this.userService.getAuditLogs().subscribe({
+      next: (data) => {
+        this.auditLogs = data;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.notificationService.show('Erreur lors du chargement de l\'historique', 'error');
+        console.error(err);
+      }
+    });
+  }
+
+  setTab(tab: 'users' | 'requests' | 'audit'): void {
     this.activeTab = tab;
-    this.filterUsers();
+    if (tab === 'audit') {
+      this.loadAuditLogs();
+    } else {
+      this.filterUsers();
+    }
   }
 
   filterUsers(): void {
-    // 1. Filtrer les demandes en attente (indépendamment de l'affichage)
     this.pendingRequests = this.users.filter(u => u.enAttenteApprobation === true);
 
-    // 2. Filtrer la liste à afficher selon l'onglet
     let sourceList = this.activeTab === 'users' 
       ? this.users.filter(u => u.enAttenteApprobation !== true)
       : this.pendingRequests;
@@ -347,6 +418,16 @@ export class UtilisateurListComponent implements OnInit {
       return matchesSearch && matchesRole;
     });
     this.cdr.markForCheck();
+  }
+
+  getActionBadgeClass(action: string): string {
+    switch (action) {
+      case 'APPROBATION': return 'bg-success';
+      case 'REJET': case 'SUPPRESSION': return 'bg-danger';
+      case 'ACTIVATION': return 'bg-primary';
+      case 'DESACTIVATION': return 'bg-warning text-dark';
+      default: return 'bg-secondary';
+    }
   }
 
   getRoleBadgeClass(role: string): string {
@@ -373,17 +454,19 @@ export class UtilisateurListComponent implements OnInit {
 
   onUserSaved(user: User): void {
     this.showForm = false;
+    this.notificationService.show(this.isEdit ? 'Utilisateur mis à jour' : 'Utilisateur créé');
     this.loadUsers();
   }
 
   toggleStatus(user: User): void {
-    if (confirm(`Voulez-vous ${user.actif ? 'désactiver' : 'activer'} l'utilisateur ${user.username} ?`)) {
+    const action = user.actif ? 'désactiver' : 'activer';
+    if (confirm(`Voulez-vous ${action} l'utilisateur ${user.username} ?`)) {
       this.userService.toggleStatus(user.id!).subscribe({
         next: (updated) => {
-          user.actif = updated.actif;
-          this.filterUsers();
+          this.notificationService.show(`Utilisateur ${updated.actif ? 'activé' : 'désactivé'} avec succès`);
+          this.loadUsers();
         },
-        error: (err) => console.error('Erreur lors du changement de statut', err)
+        error: (err) => this.notificationService.show('Erreur lors du changement de statut', 'error')
       });
     }
   }
@@ -392,10 +475,10 @@ export class UtilisateurListComponent implements OnInit {
     if (confirm(`Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur ${user.username} ?`)) {
       this.userService.deleteUser(user.id!).subscribe({
         next: () => {
-          this.users = this.users.filter(u => u.id !== user.id);
-          this.filterUsers();
+          this.notificationService.show('Utilisateur supprimé');
+          this.loadUsers();
         },
-        error: (err) => console.error('Erreur lors de la suppression', err)
+        error: (err) => this.notificationService.show('Erreur lors de la suppression', 'error')
       });
     }
   }
@@ -404,9 +487,10 @@ export class UtilisateurListComponent implements OnInit {
     if (confirm(`Accepter la demande d'inscription de ${user.username} ?`)) {
       this.userService.approveUser(user.id!).subscribe({
         next: () => {
-          this.loadUsers(); // Recharger tout
+          this.notificationService.show(`Compte de ${user.username} approuvé`);
+          this.loadUsers();
         },
-        error: (err) => console.error('Erreur approbation', err)
+        error: (err) => this.notificationService.show('Erreur approbation', 'error')
       });
     }
   }
@@ -415,9 +499,10 @@ export class UtilisateurListComponent implements OnInit {
     if (confirm(`Refuser et supprimer la demande de ${user.username} ?`)) {
       this.userService.rejectUser(user.id!).subscribe({
         next: () => {
-          this.loadUsers(); // Recharger tout
+          this.notificationService.show(`Demande de ${user.username} refusée et supprimée`);
+          this.loadUsers();
         },
-        error: (err) => console.error('Erreur rejet', err)
+        error: (err) => this.notificationService.show('Erreur rejet', 'error')
       });
     }
   }

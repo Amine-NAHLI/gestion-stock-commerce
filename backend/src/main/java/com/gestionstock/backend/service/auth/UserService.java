@@ -1,15 +1,19 @@
 package com.gestionstock.backend.service.auth;
 
 import com.gestionstock.backend.dto.auth.UserDTO;
+import com.gestionstock.backend.entity.auth.AuditLog;
 import com.gestionstock.backend.entity.auth.Role;
 import com.gestionstock.backend.entity.auth.User;
+import com.gestionstock.backend.repository.auth.AuditLogRepository;
 import com.gestionstock.backend.repository.auth.RoleRepository;
 import com.gestionstock.backend.repository.auth.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +24,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogRepository auditLogRepository;
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -76,18 +81,19 @@ public class UserService {
             user.setRole(role);
         }
 
-        if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
 
+        saveAuditLog("MODIFICATION", "Mise à jour des informations", user.getUsername());
         return mapToDTO(userRepository.save(user));
     }
 
     @Transactional
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
+        
+        saveAuditLog("SUPPRESSION", "Suppression définitive du compte", user.getUsername());
         userRepository.deleteById(id);
     }
 
@@ -96,6 +102,10 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
         user.setActif(!user.getActif());
+        
+        String action = user.getActif() ? "ACTIVATION" : "DESACTIVATION";
+        saveAuditLog(action, "Changement de statut manuel", user.getUsername());
+        
         return mapToDTO(userRepository.save(user));
     }
 
@@ -105,6 +115,9 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
         user.setActif(true);
         user.setEnAttenteApprobation(false);
+        
+        saveAuditLog("APPROBATION", "Demande d'inscription approuvée", user.getUsername());
+        
         return mapToDTO(userRepository.save(user));
     }
 
@@ -115,7 +128,27 @@ public class UserService {
         if (!user.getEnAttenteApprobation()) {
             throw new IllegalArgumentException("Cet utilisateur n'est pas en attente d'approbation");
         }
+        
+        saveAuditLog("REJET", "Demande d'inscription refusée", user.getUsername());
         userRepository.delete(user);
+    }
+
+    private void saveAuditLog(String action, String details, String targetUsername) {
+        String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        AuditLog log = AuditLog.builder()
+                .action(action)
+                .details(details)
+                .adminUsername(adminUsername)
+                .targetUsername(targetUsername)
+                .timestamp(LocalDateTime.now())
+                .build();
+        
+        auditLogRepository.save(log);
+    }
+
+    public List<AuditLog> getAuditLogs() {
+        return auditLogRepository.findAllByOrderByTimestampDesc();
     }
 
     private UserDTO mapToDTO(User user) {
