@@ -12,114 +12,97 @@ import { User as UserType } from '../../core/models/user.model';
     <div class="modal-backdrop fade show"></div>
     <div class="modal fade show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark-soft border-secondary text-white shadow-lg">
-          <div class="modal-header border-secondary">
-            <h5 class="modal-title fw-bold">
-              {{ isEdit ? 'Modifier' : 'Nouvel' }} Utilisateur
-            </h5>
-            <button type="button" class="btn-close btn-close-white" (click)="close.emit()"></button>
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          <div class="modal-header border-0 bg-light p-4">
+            <h4 class="modal-title fw-bold text-primary d-flex align-items-center gap-2">
+              <i class="bi" [ngClass]="isEdit ? 'bi-person-gear' : 'bi-person-plus-fill'"></i>
+              {{ isEdit ? 'Modifier' : 'Ajouter' }} un Utilisateur
+            </h4>
+            <button type="button" class="btn-close shadow-none" (click)="close.emit()"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body p-4 bg-white">
             <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-              <div class="mb-3">
-                <label class="form-label text-muted small uppercase fw-bold">Nom d'utilisateur</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-dark-light border-secondary text-muted">
-                    <i class="bi bi-person"></i>
-                  </span>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Nom d'utilisateur *</label>
                   <input 
                     type="text" 
                     formControlName="username"
-                    class="form-control bg-dark-light border-secondary text-white shadow-none"
-                    placeholder="ex: jdoe"
+                    class="form-control rounded-3"
+                    placeholder="ex: jean.dupont"
                     [class.is-invalid]="submitted && f['username'].errors"
                   >
+                  <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
+                    L'identifiant est obligatoire (min 3 car.)
+                  </div>
                 </div>
-                <div *ngIf="submitted && f['username'].errors" class="invalid-feedback d-block">
-                  Le nom d'utilisateur est obligatoire (min 3 car.)
-                </div>
-              </div>
 
-              <div class="mb-3">
-                <label class="form-label text-muted small uppercase fw-bold">Email</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-dark-light border-secondary text-muted">
-                    <i class="bi bi-envelope"></i>
-                  </span>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Adresse Email *</label>
                   <input 
                     type="email" 
                     formControlName="email"
-                    class="form-control bg-dark-light border-secondary text-white shadow-none"
-                    placeholder="ex: john@example.com"
+                    class="form-control rounded-3"
+                    placeholder="ex: jean@exemple.com"
                     [class.is-invalid]="submitted && f['email'].errors"
                   >
+                  <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+                    Veuillez saisir un email valide
+                  </div>
                 </div>
-                <div *ngIf="submitted && f['email'].errors" class="invalid-feedback d-block">
-                  L'email est obligatoire et doit être valide
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Nom Complet</label>
+                  <input 
+                    type="text" 
+                    formControlName="nomComplet"
+                    class="form-control rounded-3"
+                    placeholder="ex: Jean Dupont"
+                  >
                 </div>
-              </div>
 
-              <div class="mb-3">
-                <label class="form-label text-muted small uppercase fw-bold">Nom Complet</label>
-                <input 
-                  type="text" 
-                  formControlName="nomComplet"
-                  class="form-control bg-dark-light border-secondary text-white shadow-none"
-                  placeholder="ex: John Doe"
-                >
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label text-muted small uppercase fw-bold">Rôle</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-dark-light border-secondary text-muted">
-                    <i class="bi bi-shield-lock"></i>
-                  </span>
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Rôle *</label>
                   <select 
                     formControlName="role"
-                    class="form-select bg-dark-light border-secondary text-white shadow-none"
+                    class="form-select rounded-3 shadow-none"
                   >
                     <option value="EMPLOYE">Employé</option>
                     <option value="GERANT">Gérant</option>
                     <option value="ADMIN">Administrateur</option>
                   </select>
                 </div>
-              </div>
 
-              <div class="mb-3" *ngIf="!isEdit || showPassword">
-                <label class="form-label text-muted small uppercase fw-bold">
-                  Mot de passe {{ isEdit ? '(Nouveau)' : '' }}
-                </label>
-                <div class="input-group">
-                  <span class="input-group-text bg-dark-light border-secondary text-muted">
-                    <i class="bi bi-key"></i>
-                  </span>
+                <div class="col-12" *ngIf="!isEdit || showPassword">
+                  <label class="form-label fw-semibold">
+                    {{ isEdit ? 'Nouveau mot de passe' : 'Mot de passe *' }}
+                  </label>
                   <input 
                     type="password" 
                     formControlName="password"
-                    class="form-control bg-dark-light border-secondary text-white shadow-none"
+                    class="form-control rounded-3 shadow-none"
                     placeholder="••••••••"
                     [class.is-invalid]="submitted && f['password'].errors"
                   >
+                  <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+                    Minimum 6 caractères requis
+                  </div>
                 </div>
-                <div *ngIf="submitted && f['password'].errors" class="invalid-feedback d-block">
-                  Le mot de passe doit contenir au moins 6 caractères
+
+                <div class="col-12 mt-2" *ngIf="isEdit">
+                  <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none p-0" (click)="showPassword = !showPassword">
+                    <i class="bi" [ngClass]="showPassword ? 'bi-dash-circle' : 'bi-plus-circle'"></i>
+                    {{ showPassword ? 'Annuler le changement' : 'Changer le mot de passe' }}
+                  </button>
                 </div>
               </div>
 
-              <div class="mb-3" *ngIf="isEdit">
-                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="showPassword = !showPassword">
-                  <i class="bi" [ngClass]="showPassword ? 'bi-x-circle' : 'bi-pencil'"></i>
-                  {{ showPassword ? 'Annuler le changement' : 'Changer le mot de passe' }}
-                </button>
-              </div>
-
-              <div class="d-flex gap-2 justify-content-end mt-4">
-                <button type="button" class="btn btn-outline-light" (click)="close.emit()">Annuler</button>
-                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="loading">
-                  <i class="bi bi-check-lg" *ngIf="!loading"></i>
+              <div class="d-flex gap-2 justify-content-end mt-4 pt-3 border-top">
+                <button type="button" class="btn btn-light px-4 rounded-3" (click)="close.emit()">Annuler</button>
+                <button type="submit" class="btn btn-primary px-4 rounded-3 shadow-sm d-flex align-items-center gap-2" [disabled]="loading">
                   <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
-                  {{ isEdit ? 'Enregistrer' : 'Créer' }}
+                  <i class="bi bi-check2-circle" *ngIf="!loading"></i>
+                  {{ isEdit ? 'Mettre à jour' : 'Enregistrer' }}
                 </button>
               </div>
             </form>
@@ -129,18 +112,25 @@ import { User as UserType } from '../../core/models/user.model';
     </div>
   `,
   styles: [`
-    .bg-dark-soft { background-color: #1a1a1a; }
-    .bg-dark-light { background-color: #2a2a2a; }
-    .border-secondary { border-color: rgba(255, 255, 255, 0.1) !important; }
-    .modal-backdrop { opacity: 0.7; background-color: #000; }
+    .modal-content { border: none; }
+    .modal-backdrop { opacity: 0.5; background-color: #0f172a; }
     
-    .form-control:focus, .form-select:focus {
-      border-color: #3b82f6;
-      background-color: #2d2d2d;
-      color: white;
+    .form-label { font-size: 0.9rem; color: #475569; }
+    
+    .form-control, .form-select {
+      border: 1px solid #e2e8f0;
+      padding: 0.625rem 0.875rem;
+      
+      &:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+      }
     }
     
-    .invalid-feedback { font-size: 0.75rem; }
+    .btn-primary {
+      background-color: #6366f1;
+      border-color: #6366f1;
+    }
   `]
 })
 export class UtilisateurFormComponent implements OnInit {
@@ -163,7 +153,7 @@ export class UtilisateurFormComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       nomComplet: [''],
       role: ['EMPLOYE', Validators.required],
-      password: ['', []] // Validators added in ngOnInit if needed
+      password: ['', []]
     });
   }
 
@@ -176,7 +166,6 @@ export class UtilisateurFormComponent implements OnInit {
         role: this.user.role
       });
     } else {
-      // New user requires password
       this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
       this.userForm.get('password')?.updateValueAndValidity();
     }

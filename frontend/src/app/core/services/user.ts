@@ -35,4 +35,12 @@ export class UserService {
   toggleStatus(id: number): Observable<User> {
     return this.http.patch<User>(`${API_URL}/${id}/toggle-status`, {});
   }
+
+  approveUser(id: number): Observable<User> {
+    return this.http.patch<User>(`${API_URL}/${id}/approve`, {});
+  }
+
+  rejectUser(id: number): Observable<any> {
+    return this.http.delete(`${API_URL}/${id}/reject`);
+  }
 }

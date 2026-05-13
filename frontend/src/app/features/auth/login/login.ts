@@ -94,13 +94,19 @@ export class Login implements OnInit {
       error: (err) => {
         console.error('❌ Erreur de connexion :', err);
         this.isLoading.set(false);
-        if (err.status === 401) {
+        
+        const serverMessage = err.error?.message || '';
+        
+        if (serverMessage.toLowerCase().includes('désactivé')) {
+          this.errorMessage.set('⚠️ VOTRE COMPTE EST DÉSACTIVÉ. Veuillez contacter l\'administrateur pour rétablir vos accès.');
+        } else if (err.status === 401) {
           this.errorMessage.set('Nom d\'utilisateur ou mot de passe incorrect');
         } else if (err.status === 0) {
           this.errorMessage.set('Impossible de joindre le serveur. Vérifiez que le backend est démarré.');
         } else {
-          this.errorMessage.set('Erreur lors de la connexion : ' + (err.error?.message || err.message));
+          this.errorMessage.set('Erreur lors de la connexion : ' + (serverMessage || err.message));
         }
+        this.cdr.markForCheck();
       }
     });
   }

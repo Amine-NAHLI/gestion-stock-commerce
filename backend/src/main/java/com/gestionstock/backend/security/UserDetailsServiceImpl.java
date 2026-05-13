@@ -3,6 +3,7 @@ package com.gestionstock.backend.security;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -40,7 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // 2. Vérifier que l'utilisateur est actif
         if (!user.getActif()) {
-            throw new UsernameNotFoundException("L'utilisateur " + username + " est désactivé");
+            throw new DisabledException("Votre compte est désactivé. Veuillez contacter l'administrateur.");
         }
 
         // 3. Convertir notre User en UserDetails de Spring Security

@@ -33,6 +33,9 @@ public class User {
     @Column(nullable = false)
     private Boolean actif = true;
 
+    @Column(name = "en_attente_approbation", nullable = false)
+    private Boolean enAttenteApprobation = false;
+
     @Column(name = "date_creation", nullable = false, updatable = false)
     private LocalDateTime dateCreation;
 
@@ -47,6 +50,9 @@ public class User {
         this.dateCreation = LocalDateTime.now();
         if (this.actif == null) {
             this.actif = true;
+        }
+        if (this.enAttenteApprobation == null) {
+            this.enAttenteApprobation = false;
         }
     }
 }

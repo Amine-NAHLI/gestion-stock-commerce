@@ -8,6 +8,7 @@ export interface User {
   nomComplet: string;
   role: string;
   actif: boolean;
+  enAttenteApprobation?: boolean;
   dateCreation?: string;
   password?: string;
 }

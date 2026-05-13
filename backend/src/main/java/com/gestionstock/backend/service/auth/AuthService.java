@@ -102,12 +102,13 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword())); // ⚠️ BCrypt
         user.setNomComplet(request.getNomComplet());
         user.setRole(role);
-        user.setActif(true);
+        user.setActif(false); // 🔒 Inactif par défaut
+        user.setEnAttenteApprobation(true); // ⏳ En attente
         user.setDateCreation(LocalDateTime.now());
 
         // 5. Sauvegarder en BDD
         userRepository.save(user);
 
-        return new MessageResponse("Utilisateur créé avec succès !", true);
+        return new MessageResponse("Votre demande d'inscription a été envoyée. Un administrateur doit l'approuver avant que vous puissiez vous connecter.", true);
     }
 }

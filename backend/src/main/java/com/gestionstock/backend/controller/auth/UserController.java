@@ -68,4 +68,15 @@ public class UserController {
     public ResponseEntity<UserDTO> toggleUserStatus(@PathVariable Long id) {
         return ResponseEntity.ok(userService.toggleStatus(id));
     }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<UserDTO> approveUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.approveUser(id));
+    }
+
+    @DeleteMapping("/{id}/reject")
+    public ResponseEntity<MessageResponse> rejectUser(@PathVariable Long id) {
+        userService.rejectUser(id);
+        return ResponseEntity.ok(new MessageResponse("Demande d'inscription rejetée et utilisateur supprimé"));
+    }
 }

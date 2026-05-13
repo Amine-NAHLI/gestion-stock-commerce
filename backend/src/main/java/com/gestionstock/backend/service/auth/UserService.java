@@ -98,6 +98,25 @@ public class UserService {
         return mapToDTO(userRepository.save(user));
     }
 
+    @Transactional
+    public UserDTO approveUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
+        user.setActif(true);
+        user.setEnAttenteApprobation(false);
+        return mapToDTO(userRepository.save(user));
+    }
+
+    @Transactional
+    public void rejectUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
+        if (!user.getEnAttenteApprobation()) {
+            throw new IllegalArgumentException("Cet utilisateur n'est pas en attente d'approbation");
+        }
+        userRepository.delete(user);
+    }
+
     private UserDTO mapToDTO(User user) {
         return UserDTO.builder()
                 .id(user.getId())
@@ -105,6 +124,7 @@ public class UserService {
                 .email(user.getEmail())
                 .nomComplet(user.getNomComplet())
                 .actif(user.getActif())
+                .enAttenteApprobation(user.getEnAttenteApprobation())
                 .dateCreation(user.getDateCreation())
                 .role(user.getRole() != null ? user.getRole().getNom() : null)
                 .build();

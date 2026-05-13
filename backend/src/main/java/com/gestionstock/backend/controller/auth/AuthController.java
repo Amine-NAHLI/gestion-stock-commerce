@@ -3,6 +3,7 @@ package com.gestionstock.backend.controller.auth;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +52,10 @@ public class AuthController {
         } catch (UsernameNotFoundException e) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponse(e.getMessage(), false));
+        } catch (DisabledException e) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
                     .body(new MessageResponse(e.getMessage(), false));
         } catch (Exception e) {
             return ResponseEntity
@@ -111,6 +116,12 @@ public class AuthController {
             String username = request.get("username");
             com.gestionstock.backend.entity.auth.User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+            if (!user.getActif()) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new MessageResponse("Votre compte est désactivé. Veuillez contacter l'administrateur.", false));
+            }
 
             org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())

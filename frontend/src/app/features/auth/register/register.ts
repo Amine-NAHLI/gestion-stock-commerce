@@ -64,11 +64,11 @@ export class Register {
         this.isLoading.set(false);
 
         if (response.success) {
-          this.successMessage.set('✅ ' + response.message + ' Redirection vers la connexion...');
-          // Redirection après 2 secondes
+          this.successMessage.set(response.message);
+          // Redirection après 5 secondes pour laisser le temps de lire le message d'approbation
           setTimeout(() => {
             this.router.navigate(['/login']);
-          }, 2000);
+          }, 5000);
         } else {
           this.errorMessage.set(response.message);
         }
