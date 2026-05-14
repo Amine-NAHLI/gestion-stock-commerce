@@ -26,7 +26,8 @@ export class Register {
     role: 'EMPLOYE'
   };
 
-  // Confirmation du mot de passe
+  // Confirmation du mail et du mot de passe
+  confirmEmail = '';
   confirmPassword = '';
 
   // États du composant
@@ -37,10 +38,30 @@ export class Register {
   /**
    * Soumission du formulaire d'inscription
    */
+  private isValidEmail(email: string): boolean {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  }
+
   onSubmit(): void {
     // Validation côté client
     if (!this.data.username || !this.data.email || !this.data.password) {
       this.errorMessage.set('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    if (!this.isValidEmail(this.data.email)) {
+      this.errorMessage.set('Veuillez saisir une adresse email valide');
+      return;
+    }
+
+    if (!this.confirmEmail) {
+      this.errorMessage.set('Veuillez confirmer votre adresse email');
+      return;
+    }
+
+    if (this.data.email !== this.confirmEmail) {
+      this.errorMessage.set('Les adresses email ne correspondent pas');
       return;
     }
 

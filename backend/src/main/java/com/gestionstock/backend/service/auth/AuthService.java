@@ -1,7 +1,9 @@
 package com.gestionstock.backend.service.auth;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,16 +17,17 @@ import com.gestionstock.backend.dto.auth.MessageResponse;
 import com.gestionstock.backend.dto.auth.RegisterRequest;
 import com.gestionstock.backend.entity.auth.Role;
 import com.gestionstock.backend.entity.auth.User;
+import com.gestionstock.backend.entity.auth.VerificationToken;
 import com.gestionstock.backend.repository.auth.RoleRepository;
 import com.gestionstock.backend.repository.auth.UserRepository;
 import com.gestionstock.backend.security.JwtService;
+import com.gestionstock.backend.service.email.EmailService;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * Service de gestion de l'authentification
- * - Login (connexion)
- * - Register (inscription)
+ * Service de gestion de l'authentification - Login (connexion) - Register
+ * (inscription)
  */
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
+    private final VerificationTokenService verificationTokenService;
+
+    @Value("${app.backend.url:http://localhost:8080}")
+    private String backendUrl;
 
     /**
      * Authentifie un utilisateur et génère un token JWT
@@ -109,6 +117,53 @@ public class AuthService {
         // 5. Sauvegarder en BDD
         userRepository.save(user);
 
-        return new MessageResponse("Votre demande d'inscription a été envoyée. Un administrateur doit l'approuver avant que vous puissiez vous connecter.", true);
+        VerificationToken verificationToken = verificationTokenService.createToken(user);
+        sendVerificationEmail(user, verificationToken);
+
+        return new MessageResponse("Inscription réussie. Un email de confirmation a été envoyé à " + user.getEmail() + ".", true);
+    }
+
+    private void sendVerificationEmail(User user, VerificationToken token) {
+        String verificationUrl = String.format("%s/api/auth/verify-email?token=%s", backendUrl, token.getToken());
+        String subject = "Confirmez votre adresse email STOCKLY";
+        String htmlBody = buildVerificationEmailBody(user.getUsername(), verificationUrl);
+        emailService.sendEmail(user.getEmail(), subject, htmlBody);
+    }
+
+    private String buildVerificationEmailBody(String username, String verificationUrl) {
+        return "<div style=\"font-family:Arial,sans-serif;color:#333;line-height:1.5;\">"
+                + "<h2>Bonjour " + username + ",</h2>"
+                + "<p>Merci de vous être inscrit sur STOCKLY. Cliquez sur le bouton ci-dessous pour activer votre compte :</p>"
+                + "<p><a href=\"" + verificationUrl + "\" style=\"display:inline-block;padding:12px 20px;background-color:#3b82f6;color:#ffffff;text-decoration:none;border-radius:8px;\">Vérifier mon adresse email</a></p>"
+                + "<p>Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :</p>"
+                + "<p><a href=\"" + verificationUrl + "\">" + verificationUrl + "</a></p>"
+                + "<p>Ce lien expirera dans 24 heures.</p>"
+                + "<p>À bientôt,<br/>L'équipe STOCKLY</p>"
+                + "</div>";
+    }
+
+    @Transactional
+    public MessageResponse verifyEmailToken(String token) {
+        Optional<VerificationToken> optionalToken = verificationTokenService.findByToken(token);
+
+        if (optionalToken.isEmpty()) {
+            return new MessageResponse("Token de vérification invalide.", false);
+        }
+
+        VerificationToken verificationToken = optionalToken.get();
+
+        if (verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            verificationTokenService.invalidateToken(verificationToken);
+            return new MessageResponse("Le lien de vérification a expiré.", false);
+        }
+
+        User user = verificationToken.getUser();
+        user.setActif(true); // enabled = true
+        user.setEnAttenteApprobation(false);
+        userRepository.save(user);
+
+        verificationTokenService.invalidateToken(verificationToken);
+
+        return new MessageResponse("Adresse email vérifiée avec succès. Votre compte est maintenant activé.", true);
     }
 }
