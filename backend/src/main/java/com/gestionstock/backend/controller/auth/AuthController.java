@@ -86,19 +86,46 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/verify-email")
-    public ResponseEntity<MessageResponse> verifyEmail(@RequestParam("token") String token) {
+    @GetMapping(value = "/verify-email", produces = "text/html")
+    public String verifyEmail(@RequestParam("token") String token) {
         try {
             MessageResponse response = authService.verifyEmailToken(token);
             if (response.getSuccess()) {
-                return ResponseEntity.ok(response);
+                return buildStatusHtml("Succès !", response.getMessage(), "#10b981", "check-circle");
             }
-            return ResponseEntity.badRequest().body(response);
+            return buildStatusHtml("Oups !", response.getMessage(), "#ef4444", "x-circle");
         } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MessageResponse("Erreur lors de la vérification de l'email : " + e.getMessage(), false));
+            return buildStatusHtml("Erreur", "Une erreur technique est survenue : " + e.getMessage(), "#f59e0b", "alert-triangle");
         }
+    }
+
+    private String buildStatusHtml(String title, String message, String color, String icon) {
+        return "<!DOCTYPE html>"
+                + "<html lang=\"fr\">"
+                + "<head>"
+                + "    <meta charset=\"UTF-8\">"
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                + "    <title>" + title + " | STOCKLY</title>"
+                + "    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap\" rel=\"stylesheet\">"
+                + "    <style>"
+                + "        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }"
+                + "        .card { background: white; padding: 2.5rem; border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; max-width: 450px; width: 90%; border-top: 6px solid " + color + "; }"
+                + "        .icon { font-size: 4rem; color: " + color + "; margin-bottom: 1.5rem; }"
+                + "        h1 { color: #1e293b; margin-bottom: 1rem; font-weight: 700; }"
+                + "        p { color: #64748b; line-height: 1.6; margin-bottom: 2rem; font-size: 1.1rem; }"
+                + "        .btn { background-color: #3b82f6; color: white; padding: 0.8rem 2rem; border-radius: 0.75rem; text-decoration: none; font-weight: 600; transition: all 0.2s; display: inline-block; }"
+                + "        .btn:hover { background-color: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }"
+                + "    </style>"
+                + "</head>"
+                + "<body>"
+                + "    <div class=\"card\">"
+                + "        <div class=\"icon\">" + (color.equals("#10b981") ? "✓" : "⚠") + "</div>"
+                + "        <h1>" + title + "</h1>"
+                + "        <p>" + message + "</p>"
+                + "        <a href=\"http://localhost:4200/login\" class=\"btn\">Retourner à la connexion</a>"
+                + "    </div>"
+                + "</body>"
+                + "</html>";
     }
 
     /**
@@ -109,8 +136,12 @@ public class AuthController {
      */
     @org.springframework.web.bind.annotation.GetMapping("/demo-users")
     public ResponseEntity<?> getDemoUsers() {
-        // En vrai, il faudrait passer par le service, mais pour ce endpoint de démo, on utilise le repo directement
-        java.util.List<com.gestionstock.backend.entity.auth.User> users = userRepository.findAll();
+        // On récupère uniquement les utilisateurs actifs, vérifiés et approuvés
+        java.util.List<com.gestionstock.backend.entity.auth.User> users = userRepository.findAll().stream()
+                .filter(u -> Boolean.TRUE.equals(u.getActif()))
+                .filter(u -> Boolean.TRUE.equals(u.getEmailVerifie()))
+                .filter(u -> !Boolean.TRUE.equals(u.getEnAttenteApprobation()))
+                .collect(java.util.stream.Collectors.toList());
 
         java.util.List<java.util.Map<String, String>> demoUsers = new java.util.ArrayList<>();
         for (com.gestionstock.backend.entity.auth.User u : users) {
