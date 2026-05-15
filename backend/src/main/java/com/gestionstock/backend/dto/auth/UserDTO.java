@@ -16,6 +16,7 @@ public class UserDTO {
     private String email;
     private String nomComplet;
     private Boolean actif;
+    private Boolean emailVerifie;
     private Boolean enAttenteApprobation;
     private LocalDateTime dateCreation;
     private String role;

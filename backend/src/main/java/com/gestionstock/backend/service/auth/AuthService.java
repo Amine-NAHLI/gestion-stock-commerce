@@ -158,12 +158,13 @@ public class AuthService {
         }
 
         User user = verificationToken.getUser();
-        user.setActif(true); // enabled = true
-        user.setEnAttenteApprobation(false);
+        user.setEmailVerifie(true);
+        user.setActif(false);
+        user.setEnAttenteApprobation(true);
         userRepository.save(user);
 
         verificationTokenService.invalidateToken(verificationToken);
 
-        return new MessageResponse("Adresse email vérifiée avec succès. Votre compte est maintenant activé.", true);
+        return new MessageResponse("Adresse email verifiee avec succes. Votre compte est maintenant en attente d approbation par un administrateur.", true);
     }
 }

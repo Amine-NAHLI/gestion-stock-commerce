@@ -25,6 +25,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditLogRepository auditLogRepository;
+    private final VerificationTokenService verificationTokenService;
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -51,6 +52,9 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Rôle non trouvé : " + roleName));
         
         user.setRole(role);
+        user.setEmailVerifie(true);
+        user.setEnAttenteApprobation(false);
+        user.setActif(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
         return mapToDTO(userRepository.save(user));
@@ -94,7 +98,8 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
         
         saveAuditLog("SUPPRESSION", "Suppression définitive du compte", user.getUsername());
-        userRepository.deleteById(id);
+        verificationTokenService.removeToken(user);
+        userRepository.delete(user);
     }
 
     @Transactional
@@ -113,6 +118,9 @@ public class UserService {
     public UserDTO approveUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec l'id : " + id));
+        if (!Boolean.TRUE.equals(user.getEmailVerifie())) {
+            throw new IllegalArgumentException("L adresse email doit etre verifiee avant l approbation");
+        }
         user.setActif(true);
         user.setEnAttenteApprobation(false);
         
@@ -130,6 +138,7 @@ public class UserService {
         }
         
         saveAuditLog("REJET", "Demande d'inscription refusée", user.getUsername());
+        verificationTokenService.removeToken(user);
         userRepository.delete(user);
     }
 
@@ -158,6 +167,7 @@ public class UserService {
                 .email(user.getEmail())
                 .nomComplet(user.getNomComplet())
                 .actif(user.getActif())
+                .emailVerifie(user.getEmailVerifie())
                 .enAttenteApprobation(user.getEnAttenteApprobation())
                 .dateCreation(user.getDateCreation())
                 .role(user.getRole() != null ? user.getRole().getNom() : null)

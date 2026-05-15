@@ -40,6 +40,8 @@ public class DataInitializer implements CommandLineRunner {
         // 2. Initialiser l'utilisateur admin par défaut
         initAdminUser();
 
+        markExistingApprovedUsersAsEmailVerified();
+
         log.info("=================================================");
         log.info("  Initialisation terminée !");
         log.info("=================================================");
@@ -92,6 +94,8 @@ public class DataInitializer implements CommandLineRunner {
                 admin.setNomComplet("Administrateur");
                 admin.setRole(adminRole);
                 admin.setActif(true);
+                admin.setEmailVerifie(true);
+                admin.setEnAttenteApprobation(false);
                 admin.setDateCreation(LocalDateTime.now());
                 userRepository.save(admin);
             }
@@ -104,6 +108,8 @@ public class DataInitializer implements CommandLineRunner {
                 gerant.setNomComplet("Gérant Principal");
                 gerant.setRole(gerantRole);
                 gerant.setActif(true);
+                gerant.setEmailVerifie(true);
+                gerant.setEnAttenteApprobation(false);
                 gerant.setDateCreation(LocalDateTime.now());
                 userRepository.save(gerant);
             }
@@ -116,6 +122,8 @@ public class DataInitializer implements CommandLineRunner {
                 employe.setNomComplet("Employé Caisse");
                 employe.setRole(employeRole);
                 employe.setActif(true);
+                employe.setEmailVerifie(true);
+                employe.setEnAttenteApprobation(false);
                 employe.setDateCreation(LocalDateTime.now());
                 userRepository.save(employe);
             }
@@ -124,5 +132,18 @@ public class DataInitializer implements CommandLineRunner {
         } else {
             log.info("Des utilisateurs existent déjà ({} users en base)", userRepository.count());
         }
+    }
+    /**
+     * Les comptes deja actifs avant l ajout de la verification email restent utilisables.
+     */
+    private void markExistingApprovedUsersAsEmailVerified() {
+        userRepository.findAll().stream()
+                .filter(user -> Boolean.TRUE.equals(user.getActif()))
+                .filter(user -> !Boolean.TRUE.equals(user.getEnAttenteApprobation()))
+                .filter(user -> !Boolean.TRUE.equals(user.getEmailVerifie()))
+                .forEach(user -> {
+                    user.setEmailVerifie(true);
+                    userRepository.save(user);
+                });
     }
 }

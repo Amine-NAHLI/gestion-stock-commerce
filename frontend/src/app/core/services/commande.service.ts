@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Commande, CommandeRequest, StatutCommande } from '../models/commande.model';
+import { API_BASE_URL } from './api.config';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = API_BASE_URL;
 
 /**
  * Service Angular pour la gestion des commandes fournisseurs.

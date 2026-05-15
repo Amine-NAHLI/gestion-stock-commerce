@@ -33,6 +33,9 @@ public class User {
     @Column(nullable = false)
     private Boolean actif = true;
 
+    @Column(name = "email_verifie", nullable = false)
+    private Boolean emailVerifie = false;
+
     @Column(name = "en_attente_approbation", nullable = false)
     private Boolean enAttenteApprobation = false;
 
@@ -50,6 +53,9 @@ public class User {
         this.dateCreation = LocalDateTime.now();
         if (this.actif == null) {
             this.actif = true;
+        }
+        if (this.emailVerifie == null) {
+            this.emailVerifie = false;
         }
         if (this.enAttenteApprobation == null) {
             this.enAttenteApprobation = false;
