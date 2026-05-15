@@ -87,8 +87,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Origines autorisées (depuis application.properties)
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        // Origines autorisées (patterns depuis application.properties)
+        // Utilise allowedOriginPatterns pour supporter les wildcards (ex: https://*.vercel.app)
+        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
 
         // Méthodes HTTP autorisées
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
