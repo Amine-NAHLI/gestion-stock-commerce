@@ -122,7 +122,7 @@ public class AuthController {
                 + "        <div class=\"icon\">" + (color.equals("#10b981") ? "✓" : "⚠") + "</div>"
                 + "        <h1>" + title + "</h1>"
                 + "        <p>" + message + "</p>"
-                + "        <a href=\"http://localhost:4200/login\" class=\"btn\">Retourner à la connexion</a>"
+                + "        <a href=\"https://gestion-stock-commerce.vercel.app/login\" class=\"btn\">Retourner à la connexion</a>"
                 + "    </div>"
                 + "</body>"
                 + "</html>";
