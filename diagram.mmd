@@ -1,0 +1,46 @@
+useCaseDiagram
+    actor "Administrateur" as Admin
+    actor "Gérant" as Gerant
+    actor "Employé" as Employe
+
+    package "Système de Gestion STOCKLY" {
+        usecase "S'authentifier" as UC_Auth
+        usecase "Gérer les utilisateurs" as UC_Users
+        usecase "Gérer le catalogue (Produits/Cat.)" as UC_Catalog
+        usecase "Suivre les stocks & Alertes" as UC_Stock
+        usecase "Enregistrer une Vente" as UC_Vente
+        usecase "Gérer les Fournisseurs" as UC_Fourn
+        usecase "Passer/Suivre Commandes" as UC_Cmd
+        usecase "Consulter Dashboard (KPI)" as UC_Dash
+        usecase "Exporter Rapports Excel" as UC_Export
+        usecase "Analyse IA (Prédictions)" as UC_AI
+    }
+
+    %% Relations Employé
+    Employe --> UC_Auth
+    Employe --> UC_Stock
+    Employe --> UC_Vente
+
+    %% Relations Gérant
+    Gerant --> UC_Auth
+    Gerant --> UC_Catalog
+    Gerant --> UC_Stock
+    Gerant --> UC_Vente
+    Gerant --> UC_Fourn
+    Gerant --> UC_Cmd
+    Gerant --> UC_Dash
+    Gerant --> UC_Export
+    Gerant --> UC_AI
+
+    %% Relations Admin
+    Admin --> UC_Auth
+    Admin --> UC_Users
+
+    %% Inclusions (Auth est nécessaire pour tout)
+    UC_Users ..> UC_Auth : <<include>>
+    UC_Catalog ..> UC_Auth : <<include>>
+    UC_Vente ..> UC_Auth : <<include>>
+    UC_Cmd ..> UC_Auth : <<include>>
+    
+    %% Extensions
+    UC_Stock <.. UC_AI : <<extend>>
