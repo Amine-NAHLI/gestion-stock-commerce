@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Categorie, Produit } from '../models/produit.model';
+import { API_BASE_URL } from './api.config';
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = API_BASE_URL;
 
 @Injectable({
   providedIn: 'root'

@@ -2,8 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MouvementStock } from '../models/mouvement.model';
+import { API_BASE_URL } from './api.config';
 
-const API_URL = 'http://localhost:8080/api/mouvements';
+const API_URL = `${API_BASE_URL}/mouvements`;
 
 @Injectable({
   providedIn: 'root'

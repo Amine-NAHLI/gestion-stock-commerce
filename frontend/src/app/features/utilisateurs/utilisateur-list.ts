@@ -129,7 +129,7 @@ import { UtilisateurFormComponent } from './utilisateur-form';
                   <ng-container *ngIf="activeTab === 'requests'">
                     <span class="status-pill-warning">
                       <span class="dot"></span>
-                      En attente
+                      {{ user.emailVerifie ? 'En attente admin' : 'Email non v�rifi�' }}
                     </span>
                   </ng-container>
                 </td>
@@ -490,7 +490,7 @@ export class UtilisateurListComponent implements OnInit {
           this.notificationService.show(`Compte de ${user.username} approuvé`);
           this.loadUsers();
         },
-        error: (err) => this.notificationService.show('Erreur approbation', 'error')
+        error: (err) => this.notificationService.show(err.error?.message || 'Erreur approbation', 'error')
       });
     }
   }
@@ -502,7 +502,7 @@ export class UtilisateurListComponent implements OnInit {
           this.notificationService.show(`Demande de ${user.username} refusée et supprimée`);
           this.loadUsers();
         },
-        error: (err) => this.notificationService.show('Erreur rejet', 'error')
+        error: (err) => this.notificationService.show(err.error?.message || 'Erreur rejet', 'error')
       });
     }
   }
