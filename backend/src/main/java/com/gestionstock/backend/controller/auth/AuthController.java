@@ -133,10 +133,16 @@ public class AuthController {
             com.gestionstock.backend.entity.auth.User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-            if (!user.getActif()) {
+            if (!Boolean.TRUE.equals(user.getEmailVerifie())) {
                 return ResponseEntity
                         .status(HttpStatus.FORBIDDEN)
-                        .body(new MessageResponse("Votre compte est désactivé. Veuillez contacter l'administrateur.", false));
+                        .body(new MessageResponse("Veuillez verifier votre adresse email avant de vous connecter.", false));
+            }
+
+            if (!Boolean.TRUE.equals(user.getActif()) || Boolean.TRUE.equals(user.getEnAttenteApprobation())) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(new MessageResponse("Votre compte est en attente d approbation par l administrateur.", false));
             }
 
             org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User

@@ -22,12 +22,22 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${app.mail.enabled:true}")
+    private boolean mailEnabled;
+
+    @Value("${spring.mail.from:${spring.mail.username:}}")
     private String fromAddress;
 
     @Override
     public void sendEmail(String to, String subject, String htmlBody) {
         log.debug("Envoi de l'email de vérification à {}", to);
+
+        if (!mailEnabled || fromAddress == null || fromAddress.isBlank()) {
+            log.warn("Envoi d'email désactivé car la configuration SMTP est incomplète. Email prévu vers {} non envoyé. Sujet='{}'", to, subject);
+            log.debug("Contenu email: {}", htmlBody);
+            return;
+        }
+
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(

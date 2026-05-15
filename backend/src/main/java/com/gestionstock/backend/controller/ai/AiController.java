@@ -3,7 +3,6 @@ package com.gestionstock.backend.controller.ai;
 import com.gestionstock.backend.dto.dashboard.DashboardStatsDTO;
 import com.gestionstock.backend.service.ai.GroqService;
 import com.gestionstock.backend.service.dashboard.DashboardService;
-import com.gestionstock.backend.service.produit.ProduitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +13,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/ai")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AiController {
 
     private final GroqService groqService;
-    private final ProduitService produitService;
     private final DashboardService dashboardService;
 
     @GetMapping("/generate-description")

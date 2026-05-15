@@ -39,9 +39,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Utilisateur non trouvé avec le username : " + username));
 
-        // 2. Vérifier que l'utilisateur est actif
-        if (!user.getActif()) {
-            throw new DisabledException("Votre compte est désactivé. Veuillez contacter l'administrateur.");
+        // 2. Verifier que l email est confirme puis que le compte est approuve
+        if (!Boolean.TRUE.equals(user.getEmailVerifie())) {
+            throw new DisabledException("Veuillez verifier votre adresse email avant de vous connecter.");
+        }
+
+        if (!Boolean.TRUE.equals(user.getActif()) || Boolean.TRUE.equals(user.getEnAttenteApprobation())) {
+            throw new DisabledException("Votre compte est en attente d approbation par l administrateur.");
         }
 
         // 3. Convertir notre User en UserDetails de Spring Security
@@ -50,7 +54,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getActif(),    // enabled
+                Boolean.TRUE.equals(user.getActif()) && Boolean.TRUE.equals(user.getEmailVerifie()) && !Boolean.TRUE.equals(user.getEnAttenteApprobation()),
                 true,               // accountNonExpired
                 true,               // credentialsNonExpired
                 true,               // accountNonLocked
